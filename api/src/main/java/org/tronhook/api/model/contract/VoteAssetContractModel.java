@@ -2,7 +2,7 @@ package org.tronhook.api.model.contract;
 
 import java.util.List;
 
-public class VoteAssetContract {
+public class VoteAssetContractModel {
 
 	private String from;
 	

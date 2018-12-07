@@ -31,7 +31,4 @@ public class TransferContractModel {
 	public void setAmount(long amount) {
 		this.amount = amount;
 	}
-	
-	
-	
 }
