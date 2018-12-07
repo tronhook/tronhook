@@ -1,5 +1,6 @@
 package org.tronhook.api;
 
+import com.google.inject.Inject;
 import com.typesafe.config.Config;
 
 public abstract class TronHook implements ITronHook{

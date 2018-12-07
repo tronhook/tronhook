@@ -7,10 +7,9 @@ import org.tronhook.api.model.TransactionModel;
 
 public interface ITronHook {
 
+
 	
-	public void processBlocks(List<BlockModel> block) throws TronHookException;
 	
-	public void processTransactions(List<TransactionModel> transactions) throws TronHookException;
 	
 	
 	

@@ -79,6 +79,7 @@ public class BlockParser {
 					transaction.setSize(txSize);
 					transaction.setContract(ContractParser.parse(rawContract));
 					
+					block.addTransaction(transaction);
 				}
 
 			}

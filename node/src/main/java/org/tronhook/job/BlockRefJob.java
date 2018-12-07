@@ -58,11 +58,9 @@ public class BlockRefJob {
 			
 			BasicDBObject newDoc = new BasicDBObject("_id", i);
 			newDoc.append("tries", 0);
+			newDoc.append("processed", 0);
 			bulk.insert(newDoc);
 			
-//			BlockRef blockRef = new BlockRef(lastBlockNum);
-//			System.out.println("inserting block =>"+i);
-//			blocks.update("{number:"+lastBlockNum+"}").upsert().with(blockRef);
 			
 			if (bulkSize==100000) {				
 				bulk.execute();

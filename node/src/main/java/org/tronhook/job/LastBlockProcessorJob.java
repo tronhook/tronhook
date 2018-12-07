@@ -41,7 +41,7 @@ public class LastBlockProcessorJob extends AbstractBlockProcessorJob{
 	@Override
 	protected List<Block> getBlocks(int maxBatchSize) {
 		
-		MongoCursor<BlockRef> blocks = this.jongo.getCollection("blocks").find("{tries:{ $gte :  0, $lt : 3}}").sort("{_id:-1}").limit(10).as(BlockRef.class);
+		MongoCursor<BlockRef> blocks = this.jongo.getCollection("blocks").find("{tries:{ $gte :  0, $lt : 3},processed:0}").sort("{_id:-1}").limit(10).as(BlockRef.class);
 		
 		List<Long> result= new ArrayList<>();
 		

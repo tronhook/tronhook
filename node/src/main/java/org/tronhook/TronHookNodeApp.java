@@ -35,7 +35,7 @@ public class TronHookNodeApp extends Jooby {
 			
 			//jongo.getCollection("blocks").ensureIndex("{number:1}","{unique:true}");
 			jongo.getCollection("blocks").ensureIndex("{tries:1}");
-			
+			jongo.getCollection("blocks").ensureIndex("{processed:1}","{background:true}");
 		});
 		
 		onStop((registry)->{
