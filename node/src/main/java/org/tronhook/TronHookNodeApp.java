@@ -8,7 +8,9 @@ import org.jooby.quartz.Quartz;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tronhook.job.BlockRefJob;
+import org.tronhook.job.LastBlockCache;
 import org.tronhook.job.LastBlockProcessorJob;
+import org.tronhook.job.UnprocessedBlockProcessorJob;
 
 import io.trxplorer.troncli.TronFullNodeCli;
 import io.trxplorer.troncli.TronSolidityNodeCli;
@@ -25,17 +27,23 @@ public class TronHookNodeApp extends Jooby {
 	
 		
 		use(new Quartz(BlockRefJob.class,
-				LastBlockProcessorJob.class
+				LastBlockProcessorJob.class,
+				LastBlockCache.class,
+				UnprocessedBlockProcessorJob.class
 				));
+		
+		
+		
 
 		
 		onStart((registry)->{
 
 			Jongo jongo = registry.require(Jongo.class);
 			
-			//jongo.getCollection("blocks").ensureIndex("{number:1}","{unique:true}");
-			jongo.getCollection("blocks").ensureIndex("{tries:1}");
-			jongo.getCollection("blocks").ensureIndex("{processed:1}","{background:true}");
+			TronHookNodeConfig config = registry.require(TronHookNodeConfig.class);
+
+			jongo.getCollection(Helper.getBlockCollectionName(config)).ensureIndex("{tries:1}");
+			jongo.getCollection(Helper.getBlockCollectionName(config)).ensureIndex("{processed:1}","{background:true}");
 		});
 		
 		onStop((registry)->{
@@ -50,7 +58,12 @@ public class TronHookNodeApp extends Jooby {
 		});
 		
 
-		get("/", (req, res) -> {
+		get("/rules", (req, res) -> {
+
+			res.send("");
+		});
+		
+		post("/rule", (req, res) -> {
 
 			res.send("");
 		});

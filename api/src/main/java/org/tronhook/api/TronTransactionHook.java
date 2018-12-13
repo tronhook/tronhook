@@ -6,7 +6,7 @@ import org.tronhook.api.model.TransactionModel;
 
 import com.typesafe.config.Config;
 
-public abstract class TronTransactionHook extends TronHook{
+public abstract class TronTransactionHook extends TronHook implements ITronTransactionHook{
 
 	public TronTransactionHook(Config config) {
 		super(config);

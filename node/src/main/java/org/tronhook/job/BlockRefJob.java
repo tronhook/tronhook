@@ -1,22 +1,16 @@
 package org.tronhook.job;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.bson.Document;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
 import org.jooby.quartz.Scheduled;
 import org.quartz.DisallowConcurrentExecution;
+import org.tronhook.TronHookNodeConfig;
 import org.tronhook.model.BlockRef;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.mongodb.BasicDBObject;
 import com.mongodb.BulkWriteOperation;
-import com.mongodb.client.model.ReplaceOneModel;
-import com.mongodb.client.model.UpdateOptions;
-import com.mongodb.client.model.WriteModel;
 
 import io.trxplorer.troncli.TronFullNodeCli;
 
@@ -26,17 +20,20 @@ public class BlockRefJob {
 
 	private Jongo jongo;
 	private TronFullNodeCli fullCli;
+	private TronHookNodeConfig config;
+	
 	
 	@Inject
-	public BlockRefJob(Jongo jongo,TronFullNodeCli fullCli) {
+	public BlockRefJob(Jongo jongo,TronFullNodeCli fullCli,TronHookNodeConfig config) {
 		this.jongo = jongo;
 		this.fullCli = fullCli;
+		this.config = config;
 	}
 	
 	@Scheduled("1s")
 	public void addBlockRefs() {
 		
-		MongoCollection blocks = this.jongo.getCollection("blocks");
+		MongoCollection blocks = this.jongo.getCollection((this.config.getHookId()+"_"+this.config.getNodeId()+"_blocks").toLowerCase());
 		
 		long lastBlockNum = this.fullCli.getLastBlock().getBlockHeader().getRawData().getNumber();
 		
@@ -44,13 +41,7 @@ public class BlockRefJob {
 		
 		long lastRefBlock = lastBlock==null ? 0 : Long.valueOf(lastBlock.getId());
 
-
-
-
-		System.out.println("Mongo last block=>"+lastRefBlock);
-		System.out.println("Tron last block ===>"+lastBlockNum);
-
-		int bulkSize = 0;
+		int batchSize = 0;
 
 		BulkWriteOperation bulk = blocks.getDBCollection().initializeOrderedBulkOperation();
 		
@@ -62,16 +53,16 @@ public class BlockRefJob {
 			bulk.insert(newDoc);
 			
 			
-			if (bulkSize==100000) {				
+			if (batchSize==100000) {				
 				bulk.execute();
-				bulkSize = 0;
+				batchSize = 0;
 				break;
 			}
 			
-			bulkSize++;
+			batchSize++;
 		}
 		
-		if (bulkSize>0) {
+		if (batchSize>0) {
 			bulk.execute();
 		}
 		

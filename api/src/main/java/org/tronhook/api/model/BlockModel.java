@@ -21,10 +21,21 @@ public class BlockModel {
 	
 	private int size;
 	
+	private boolean confirmed;
+	
 	public BlockModel() {
 		this.transactions = new ArrayList<>();
 	}
 	
+		
+	public boolean isConfirmed() {
+		return confirmed;
+	}
+
+	public void setConfirmed(boolean confirmed) {
+		this.confirmed = confirmed;
+	}
+
 	public long getTimestamp() {
 		return timestamp;
 	}

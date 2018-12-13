@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -25,20 +27,35 @@
 		<application.class>org.tronhook.TronHookNodeApp</application.class>
 		<application.debug>8006</application.debug>
 		<application.fork>true</application.fork>
+		<!-- fatJarFile referenced in Dockerfile -->
+		<fatJarFile>${project.build.directory}/${project.build.finalName}.jar</fatJarFile>
 	</properties>
 
 	<dependencies>
 
+
+        
 		<dependency>
-		    <groupId>commons-io</groupId>
-		    <artifactId>commons-io</artifactId>
-		    <version>2.6</version>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-expression</artifactId>
+		    <version>5.1.3.RELEASE</version>
 		</dependency>
-  	<dependency>
-  		<groupId>${project.groupId}</groupId>
-  		<artifactId>api</artifactId>
-  		<version>${project.version}</version>
-  	</dependency>		
+
+		<dependency>
+			<groupId>org.elasticsearch.client</groupId>
+			<artifactId>elasticsearch-rest-high-level-client</artifactId>
+			<version>6.5.1</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.6</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.jooby</groupId>
 			<artifactId>jooby</artifactId>
@@ -104,14 +121,14 @@
 			<artifactId>jooby-commons-email</artifactId>
 		</dependency>
 		<dependency>
-		  <groupId>org.jooby</groupId>
-		  <artifactId>jooby-mongodb</artifactId>		 
+			<groupId>org.jooby</groupId>
+			<artifactId>jooby-mongodb</artifactId>
 		</dependency>
 		<dependency>
-		  <groupId>org.jooby</groupId>
-		  <artifactId>jooby-jongo</artifactId>
+			<groupId>org.jooby</groupId>
+			<artifactId>jooby-jongo</artifactId>
 		</dependency>
-<!-- NETTY -->
+		<!-- NETTY -->
 		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty-common</artifactId>
@@ -184,6 +201,83 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+
+
+	<build>
+
+		<plugins>
+			<plugin>
+				<groupId>io.fabric8</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+
+		<pluginManagement>
+			<plugins>
+
+				<plugin>
+					<groupId>io.fabric8</groupId>
+					<artifactId>docker-maven-plugin</artifactId>
+					<version>0.21.0</version>
+					<extensions>true</extensions>
+					<configuration>
+						<images>
+							<image>
+								<alias>${project.artifactId}</alias>
+								<name>tronhook/${project.artifactId}</name>
+								<registry>91.121.81.166:7082</registry>
+								<build>
+									<dockerFileDir>${project.basedir}</dockerFileDir>
+								</build>
+							</image>
+						</images>
+					</configuration>
+					<executions>
+						<execution>
+							<id>build</id>
+							<phase>install</phase>
+							<goals>
+								<goal>build</goal>
+							</goals>
+						</execution>
+					</executions>
+
+				</plugin>
+
+
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>io.fabric8</groupId>
+										<artifactId>
+											docker-maven-plugin
+										</artifactId>
+										<versionRange>
+											[0.15.16,)
+										</versionRange>
+										<goals>
+											<goal>build</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 
 	<repositories>
 		<repository>

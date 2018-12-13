@@ -5,16 +5,22 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import org.quartz.Job;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tron.protos.Protocol.Block;
+import org.tronhook.TronHookNodeConfig;
 
 public abstract class AbstractBlockProcessorJob {
 	
+	private TronHookNodeConfig config;
+	
+	public AbstractBlockProcessorJob(TronHookNodeConfig config) {
+		this.config = config;
+	}
 	
 	public void processBatch(int maxBatchSize,int workerBatchSize,int workers,long timemout) {
 		
-		List<Block> txs = getBlocks(maxBatchSize);
+		List<Long> txs = getBlocks(maxBatchSize);
 
 		for (int i = 0; i < txs.size(); i++) {
 			
@@ -29,7 +35,7 @@ public abstract class AbstractBlockProcessorJob {
 					workerStop = txs.size();
 				}
 				
-				List<Block> workerTx = txs.subList(workerStart, workerStop);
+				List<Long> workerTx = txs.subList(workerStart, workerStop);
 				
 				getLogger().info("- {} worker {} processing batch: [{}-{}]",getName(),w,workerStart,workerStop);
 				futures.add(processWorkerBatch(workerTx));
@@ -42,9 +48,9 @@ public abstract class AbstractBlockProcessorJob {
 			
 			
 			try {
-				getLogger().info("=> Wating for {} batch to complete: [{}-{}] ...",getName());
+				getLogger().info("=> Wating for {} batch to complete...",getName());
 				CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()])).get();
-				getLogger().info("=> Finished {} batch to complete: [{}-{}] ...",getName());
+				getLogger().info("=> Finished batch {} ...",getName());
 			} catch (InterruptedException | ExecutionException  e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -56,9 +62,9 @@ public abstract class AbstractBlockProcessorJob {
 		
 	}
 	
-	protected abstract List<Block> getBlocks(int maxBatchSize);
+	protected abstract List<Long> getBlocks(int maxBatchSize);
 	
-	public abstract CompletableFuture<Void> processWorkerBatch(List<Block> workerBlocks);
+	public abstract CompletableFuture<Void> processWorkerBatch(List<Long> workerBlocks);
 	
 	public String getName() {
 		return this.getClass().getName();
@@ -66,6 +72,12 @@ public abstract class AbstractBlockProcessorJob {
 	
 	public Logger getLogger() {
 		return LoggerFactory.getLogger(getClass());
+	}
+	
+
+	
+	public String getBlocksCollectionName() {
+		return (this.config.getHookId()+"_"+this.config.getNodeId()+"_blocks").toLowerCase();
 	}
 	
 	
