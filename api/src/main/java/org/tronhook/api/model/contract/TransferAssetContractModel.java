@@ -40,8 +40,6 @@ public class TransferAssetContractModel {
 
 	public void setAmount(long amount) {
 		this.amount = amount;
-	}
-	
-	
+	}	
 	
 }

@@ -1,6 +1,6 @@
-package org.tronhook.api.model.contract;
+package org.tronhook.api.model.core;
 
-public class Param {
+public class ParamModel {
 	
 	private boolean indexed;
 	

@@ -1,12 +1,14 @@
 package org.tronhook.api.model.contract;
 
+import org.tronhook.api.model.core.AccountTypeModel;
+
 public class AccountCreateContractModel {
 	
 	private String from;
 	
 	private String accountAddress;
 	
-	private AccountType type;
+	private AccountTypeModel type;
 	
 	public String getFrom() {
 		return from;
@@ -24,12 +26,11 @@ public class AccountCreateContractModel {
 		this.accountAddress = accountAddress;
 	}
 
-	public AccountType getType() {
+	public AccountTypeModel getType() {
 		return type;
 	}
 
-	public void setType(AccountType type) {
+	public void setType(AccountTypeModel type) {
 		this.type = type;
 	}
-
 }

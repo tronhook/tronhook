@@ -193,7 +193,4 @@ public class AssetIssueContractModel {
 	public void setPublicLatestFreeNetTime(long publicLatestFreeNetTime) {
 		this.publicLatestFreeNetTime = publicLatestFreeNetTime;
 	}
-
-
-	
 }

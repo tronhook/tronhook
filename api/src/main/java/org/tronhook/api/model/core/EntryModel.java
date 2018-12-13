@@ -1,8 +1,8 @@
-package org.tronhook.api.model.contract;
+package org.tronhook.api.model.core;
 
 import java.util.List;
 
-public class Entry {
+public class EntryModel {
 	
 	private boolean anonymous;
 	
@@ -10,15 +10,15 @@ public class Entry {
 	
 	private String name;
 	
-	private List<Param> inputs;
+	private List<ParamModel> inputs;
 	
-	private List<Param> outputs;
+	private List<ParamModel> outputs;
 	
-	private EntryType type;
+	private EntryTypeModel type;
 	
 	private boolean payable;
 	
-	private StateMutabilityType stateMutability;
+	private StateMutabilityTypeModel stateMutability;
 
 	public boolean isAnonymous() {
 		return anonymous;
@@ -44,27 +44,27 @@ public class Entry {
 		this.name = name;
 	}
 
-	public List<Param> getInputs() {
+	public List<ParamModel> getInputs() {
 		return inputs;
 	}
 
-	public void setInputs(List<Param> inputs) {
+	public void setInputs(List<ParamModel> inputs) {
 		this.inputs = inputs;
 	}
 
-	public List<Param> getOutputs() {
+	public List<ParamModel> getOutputs() {
 		return outputs;
 	}
 
-	public void setOutputs(List<Param> outputs) {
+	public void setOutputs(List<ParamModel> outputs) {
 		this.outputs = outputs;
 	}
 
-	public EntryType getType() {
+	public EntryTypeModel getType() {
 		return type;
 	}
 
-	public void setType(EntryType type) {
+	public void setType(EntryTypeModel type) {
 		this.type = type;
 	}
 
@@ -76,11 +76,11 @@ public class Entry {
 		this.payable = payable;
 	}
 
-	public StateMutabilityType getStateMutability() {
+	public StateMutabilityTypeModel getStateMutability() {
 		return stateMutability;
 	}
 
-	public void setStateMutability(StateMutabilityType stateMutability) {
+	public void setStateMutability(StateMutabilityTypeModel stateMutability) {
 		this.stateMutability = stateMutability;
 	}
 

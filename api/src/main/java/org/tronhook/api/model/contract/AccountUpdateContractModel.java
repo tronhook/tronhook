@@ -21,5 +21,4 @@ public class AccountUpdateContractModel {
 	public void setFrom(String from) {
 		this.from = from;
 	}
-
 }

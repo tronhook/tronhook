@@ -1,5 +1,7 @@
 package org.tronhook.api.model.contract;
 
+import org.tronhook.api.model.core.SmartContractModel;
+
 public class CreateSmartContractModel {
 	
 	private String from;

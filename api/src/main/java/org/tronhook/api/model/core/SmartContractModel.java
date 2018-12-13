@@ -1,4 +1,4 @@
-package org.tronhook.api.model.contract;
+package org.tronhook.api.model.core;
 
 public class SmartContractModel {
 	
@@ -6,7 +6,7 @@ public class SmartContractModel {
 	
 	private String contractAddress;
 	
-	private ABI abi;
+	private ABIModel abi;
 	
 	private String bytecode;
 	
@@ -34,11 +34,11 @@ public class SmartContractModel {
 		this.contractAddress = contractAddress;
 	}
 
-	public ABI getAbi() {
+	public ABIModel getAbi() {
 		return abi;
 	}
 
-	public void setAbi(ABI abi) {
+	public void setAbi(ABIModel abi) {
 		this.abi = abi;
 	}
 
