@@ -45,7 +45,7 @@ public class UnprocessedBlockProcessorJob extends AbstractBlockProcessorJob{
 	
 	@Scheduled("200ms")
 	public void processBlocks() {
-		this.processBatch(1000, 100, 10, 0);
+		this.processBatch(200, 20, 10, 0);
 
 	}
 	

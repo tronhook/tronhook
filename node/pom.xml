@@ -225,7 +225,6 @@
 							<image>
 								<alias>${project.artifactId}</alias>
 								<name>tronhook/${project.artifactId}</name>
-								<registry>91.121.81.166:7082</registry>
 								<build>
 									<dockerFileDir>${project.basedir}</dockerFileDir>
 								</build>
