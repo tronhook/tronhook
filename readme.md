@@ -2,9 +2,22 @@
 
 TronHook is an extensible and scalable block/data processor for Tron blockchain
 
+Some usecases TRONHook can help with:
+- ETL: extract specific data matching specific rules in order to analyze them later
+- Track a specific address or token
+- Receive notification (via websocket or http) on specific events : like vote for an address, specific contract trigger
+- Confirm that a transaction is confirmed :]
+
+# Hook
+A hook is simply a task that will be executed each time a block is met on TRON blockchain. This block can be a new block or a block for which the transactions matches a rule or a set of rules you defined.
+
+# Node
+A node is the engine that lets you run a hook. When you run a node you have to specify the hook to use and it's configuration.
+
+A node can run a single hook, but you can run as many node as you want on a single or multiple servers.
 
 # Available Hooks
-TRONHook comes with some default hooks
+TRONHook comes with some default hooks that you can use straight away
 
 ## BlockSyncHook 
 
@@ -14,7 +27,7 @@ Synchronizes the blocks into an elasticsearch database
 ```
 hook="org.tronhook.hook.elastic.BlockSyncHook"
 
-BlockSynES{
+BlockSyncES{
 url=<ELASTIC_SEARCH_URL>
 }
 
@@ -28,7 +41,7 @@ Synchronizes the accounts into an elasticsearch database
 
 # Rules
 
-# Starting a hook
+# Starting a node
 Hooks can be launched with tronhook-node that will take care of running the hooks only on the blocks that haven't been processed yet or on the blocks or transactions that match some specific rules that you have defined.
 
 ## Configuration file
