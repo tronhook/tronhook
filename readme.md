@@ -13,7 +13,8 @@ Synchronizes the blocks into an elasticsearch database
 - Configuration to add in application.[env].conf
 ```
 hook="org.tronhook.hook.elastic.BlockSyncHook"
-{
+
+BlockSynES{
 url=<ELASTIC_SEARCH_URL>
 }
 
@@ -46,7 +47,7 @@ application {
  baseUrl ="http://localhost:"${application.port}
 }
 
-db = <mongodburl>
+db = <mongodburl> # mongodb connection url
 
 nodeId=1 #useful if you want to start multiple nodes to process the same hook in parell
 
@@ -67,6 +68,17 @@ tron{
 ```
 
 ## Launching the node with Docker
+
+Tronhook requires a mongodb instance in order to keep a record of the blocks already processed.
+
+First start a mongodb instance:
+```
+docker run --name mongo -p 27017:27017 -d mongo
+```
+Set the url of this mongo instance in your configuration file:
+```
+db=<mongodburl>
+```
 Once that you have created your configuration file you can launch a node like this:
 ```
 docker run -p 7171:7171 --name tronhook.blocks --restart unless-stopped --log-opt max-size=50m -d -v application.prod.conf:/application.prod.conf -e APP_OPTS="prod" tronhook/node
