@@ -42,7 +42,7 @@ application {
  tz="UTC"
  port=7171
  env=prod
- name=tronapi_${application.env}
+ name=tronhook_${application.env}
  baseUrl ="http://localhost:"${application.port}
 }
 
