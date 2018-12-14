@@ -61,6 +61,10 @@ public class BlockProcessorService {
 			
 			List<BlockModel> parsedBlocks = BlockParser.parseBlocks(blocks);
 			
+			if (parsedBlocks.size()==0) {
+				return;
+			}
+			
 			MongoCollection blocksCollection = this.jongo.getCollection(Helper.getBlockCollectionName(config));
 
 			//first increment try on blocks
@@ -69,6 +73,7 @@ public class BlockProcessorService {
 				incrementTrybulk.find(new BasicDBObject("_id", block.getHeight())).updateOne(BasicDBObject.parse("{'$inc':{'tries':1}}"));
 			}
 			
+
 			incrementTrybulk.execute();
 				
 			//then set processed blocks
