@@ -19,16 +19,15 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tronhook.api.ITronBlockHook;
+import org.tronhook.api.TronHook;
 import org.tronhook.api.TronHookException;
-import org.tronhook.api.TronTransactionHook;
 import org.tronhook.api.model.BlockModel;
 import org.tronhook.api.model.TransactionModel;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
 
-public class BlockSyncHook extends TronTransactionHook implements ITronBlockHook {
+public class BlockSyncHook extends TronHook{
 
 	public static final String TRON_HOOK_ID = "BlockSyncES";
 	private RestHighLevelClient client;
@@ -61,18 +60,23 @@ public class BlockSyncHook extends TronTransactionHook implements ITronBlockHook
 						.source(builder);
 
 				bulkRequest.add(indexRequest);
-
+				
+				
+				
+				
 			}
 
 			processBulkRequest(bulkRequest,"block");
-
+			
+			processTransactions(getAllTransactions(blocks));
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 	}
 
-	@Override
+	
 	public void processTransactions(List<TransactionModel> transactions) {
 
 		try {
@@ -139,7 +143,7 @@ public class BlockSyncHook extends TronTransactionHook implements ITronBlockHook
 
 					}else {
 						List<String> ids = StreamSupport.stream(response.spliterator(), false).map((r)->r.getId()).collect(Collectors.toList());
-						
+						getLogger().info("{} {} ingested",ids.size(),type);
 						getLogger().debug(type+" ingested: [{}]",ids);
 						//TODO mark as done
 					}

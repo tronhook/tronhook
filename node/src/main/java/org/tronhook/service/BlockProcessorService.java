@@ -1,30 +1,24 @@
 package org.tronhook.service;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
-import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.SpelCompilerMode;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.SimpleEvaluationContext;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.tron.protos.Protocol.Block;
 import org.tronhook.Helper;
 import org.tronhook.TronHookNodeConfig;
 import org.tronhook.api.BlockInfo;
-import org.tronhook.api.ITronBlockHook;
 import org.tronhook.api.ITronHook;
-import org.tronhook.api.ITronTransactionHook;
 import org.tronhook.api.TronHook;
 import org.tronhook.api.TronHookException;
 import org.tronhook.api.model.BlockModel;
-import org.tronhook.api.model.TransactionModel;
 import org.tronhook.api.parser.BlockParser;
 import org.tronhook.api.parser.BlockParserException;
 import org.tronhook.job.LastBlockCache;
@@ -91,28 +85,10 @@ public class BlockProcessorService {
 				bi.setLastFullBlock(lbCache.getLastBlockFull());
 				bi.setLastSolidityBlock(lbCache.getLastBlockSolidity());
 				thook.setBlockInfo(bi);
+				thook.processBlocks(parsedBlocks);
 			}
 			
-			//block hook
-			if (hook instanceof ITronBlockHook) {
-				
-				ITronBlockHook blockHook = (ITronBlockHook) hook;
-				blockHook.processBlocks(parsedBlocks);	
-			}
-			
-			//tx hook
-			if (hook instanceof ITronTransactionHook) {
-				
-				ITronTransactionHook txHook = (ITronTransactionHook) hook;
-
-				List<TransactionModel> allTransactions = new ArrayList<>();
-				
-				for(BlockModel b:parsedBlocks) {
-					allTransactions.addAll(b.getTransactions());
-				}
-
-				txHook.processTransactions(allTransactions);
-			}
+		
 			
 
 			

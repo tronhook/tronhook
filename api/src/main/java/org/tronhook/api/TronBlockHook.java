@@ -6,7 +6,7 @@ import org.tronhook.api.model.BlockModel;
 
 import com.typesafe.config.Config;
 
-public abstract class TronBlockHook extends TronHook implements ITronBlockHook{
+public abstract class TronBlockHook extends TronHook {
 
 	
 	public TronBlockHook(Config config) {

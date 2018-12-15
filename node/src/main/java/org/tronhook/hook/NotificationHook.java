@@ -2,15 +2,13 @@ package org.tronhook.hook;
 
 import java.util.List;
 
-import org.tronhook.api.ITronTransactionHook;
-import org.tronhook.api.TronBlockHook;
+import org.tronhook.api.TronHook;
 import org.tronhook.api.TronHookException;
 import org.tronhook.api.model.BlockModel;
-import org.tronhook.api.model.TransactionModel;
 
 import com.typesafe.config.Config;
 
-public class NotificationHook extends TronBlockHook implements ITronTransactionHook{
+public class NotificationHook extends TronHook{
 
 	public NotificationHook(Config config) {
 		super(config);
@@ -35,11 +33,6 @@ public class NotificationHook extends TronBlockHook implements ITronTransactionH
 		
 	}
 
-	@Override
-	public void processTransactions(List<TransactionModel> transactions) throws TronHookException {
-		// TODO Auto-generated method stub
-		
-	}
 
 	
 	
