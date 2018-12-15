@@ -26,10 +26,11 @@ public class LastestBlockProcessorJob extends AbstractBlockProcessorJob{
 	private TronFullNodeCli fullCli;
 	private BlockProcessorService processor;
 	private TronHookNodeConfig config;
+	private LastBlockCache lastBlockCache;
 	
 	@Inject
-	public LastestBlockProcessorJob(Jongo jongo,TronFullNodeCli fullCli,BlockProcessorService processor,TronHookNodeConfig config) {
-		super(config);
+	public LastestBlockProcessorJob(Jongo jongo,TronFullNodeCli fullCli,BlockProcessorService processor,TronHookNodeConfig config,LastBlockCache lastBlockCache) {
+		super(config,lastBlockCache);
 		this.jongo = jongo;
 		this.fullCli = fullCli;
 		this.processor = processor;
@@ -54,7 +55,7 @@ public class LastestBlockProcessorJob extends AbstractBlockProcessorJob{
 	@Override
 	protected List<Long> getBlocks(int maxBatchSize) {
 		
-		MongoCursor<BlockRef> blocks = this.jongo.getCollection(getBlocksCollectionName()).find("{tries:{ $gte :  0, $lt : 3},processed:0}").sort("{_id:-1}").limit(maxBatchSize).as(BlockRef.class);
+		MongoCursor<BlockRef> blocks = this.jongo.getCollection(getBlocksCollectionName()).find("{tries:{ $gte :  0, $lt : 3},processed:0,_id:{$gte :  #, $lte : #}}",this.config.getBlockStart(),this.getStopBlock()).sort("{_id:-1}").limit(maxBatchSize).as(BlockRef.class);
 		
 		List<Long> result= new ArrayList<>();
 		

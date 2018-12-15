@@ -13,9 +13,11 @@ import org.tronhook.TronHookNodeConfig;
 public abstract class AbstractBlockProcessorJob {
 	
 	private TronHookNodeConfig config;
+	private LastBlockCache lastBlockCache;
 	
-	public AbstractBlockProcessorJob(TronHookNodeConfig config) {
+	public AbstractBlockProcessorJob(TronHookNodeConfig config,LastBlockCache lastBlockCache) {
 		this.config = config;
+		this.lastBlockCache = lastBlockCache;
 	}
 	
 	public void processBatch(int maxBatchSize,int workerBatchSize,int workers,long timemout) {
@@ -80,5 +82,14 @@ public abstract class AbstractBlockProcessorJob {
 		return (this.config.getHookId()+"_"+this.config.getNodeId()+"_blocks").toLowerCase();
 	}
 	
+	protected Long getStopBlock() {
+		Long lastBlockFull = this.lastBlockCache.getLastBlockFull(); 
+		
+		lastBlockFull = lastBlockFull==null ? 0 : lastBlockFull;
+		
+		long stopBlock = this.config.getBlockStop()== - 1 ? lastBlockFull : this.config.getBlockStop();
+		
+		return stopBlock;
+	}
 	
 }

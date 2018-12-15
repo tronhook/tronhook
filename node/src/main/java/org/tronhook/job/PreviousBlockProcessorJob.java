@@ -28,16 +28,14 @@ public class PreviousBlockProcessorJob extends AbstractBlockProcessorJob{
 	private Jongo jongo;
 	private BlockProcessorService processor;
 	private BlockingQueue<Long> unprocessedBlockPool;
-	private LastBlockCache lastBlockCache;
 	private TronHookNodeConfig config;
 	
 	@Inject
 	public PreviousBlockProcessorJob(Jongo jongo,BlockProcessorService processor,TronHookNodeConfig config,LastBlockCache lastBlockCache) {
-		super(config);
+		super(config,lastBlockCache);
 		this.jongo = jongo;
 		this.processor = processor;
 		this.unprocessedBlockPool = new LinkedBlockingDeque<>(100);
-		this.lastBlockCache  = lastBlockCache;
 		this.config = config;
 	}
 
@@ -117,15 +115,7 @@ public class PreviousBlockProcessorJob extends AbstractBlockProcessorJob{
 		});
 	}
 	
-	protected Long getStopBlock() {
-		Long lastBlockFull = this.lastBlockCache.getLastBlockFull(); 
-		
-		lastBlockFull = lastBlockFull==null ? 0 : lastBlockFull;
-		
-		long stopBlock = this.config.getBlockStop()== - 1 ? lastBlockFull : this.config.getBlockStop();
-		
-		return stopBlock;
-	}
+
 	
 //	public static void main(String[] args) throws IOException {
 //		
