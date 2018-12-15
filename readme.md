@@ -1,8 +1,11 @@
 # TRONHOOK
 
-TronHook is an extensible and scalable block/data processor for Tron blockchain
+TronHook is an extensible and scalable block/data processor for Tron blockchain backed with a rule engine.
 
-Some usecases TRONHook can help with:
+If you are creating a Dapp based on Tron or simply need to get some data, TronHook can help you to get the data that you need without constantly polling data from explorers API or having to do your own blockchain scanner from scratch.
+
+Some usecases TronHook can help with:
+
 - ETL: extract specific data matching specific rules in order to analyze them later
 - Track a specific address or token
 - Receive notification (via websocket or http) on specific events : like vote for an address, specific contract trigger
@@ -16,6 +19,9 @@ A node is the engine that lets you run a hook. When you run a node you have to s
 
 A node can run a single hook, but you can run as many node as you want on a single or multiple servers.
 
+# Rules
+
+
 # Available Hooks
 TRONHook comes with some default hooks that you can use straight away
 
@@ -28,7 +34,11 @@ Synchronizes the blocks into an elasticsearch database
 hook="org.tronhook.hook.elastic.BlockSyncHook"
 
 BlockSyncES{
-url=<ELASTIC_SEARCH_URL>
+	elasticsearch{
+		host="<HOST>"
+		port=<PORT>
+		scheme=[http|https]
+	}
 }
 
 ```
@@ -39,7 +49,7 @@ Synchronizes the accounts into an elasticsearch database
 
 ## ConfirmationHook
 
-# Rules
+
 
 # Starting a node
 Hooks can be launched with tronhook-node that will take care of running the hooks only on the blocks that haven't been processed yet or on the blocks or transactions that match some specific rules that you have defined.
@@ -94,5 +104,5 @@ db=<mongodburl>
 ```
 Once that you have created your configuration file you can launch a node like this:
 ```
-docker run -p 7171:7171 --name tronhook.blocks --restart unless-stopped --log-opt max-size=50m -d -v application.prod.conf:/application.prod.conf -e APP_OPTS="prod" tronhook/node
+docker run -p 7171:7171 --name tronhook.blocks -d -v application.prod.conf:/application.prod.conf -e APP_OPTS="prod" tronhook/node
 ```
