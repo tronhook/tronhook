@@ -19,7 +19,7 @@ import io.trxplorer.troncli.TronFullNodeCli;
 
 @DisallowConcurrentExecution
 @Singleton
-public class LastBlockProcessorJob extends AbstractBlockProcessorJob{
+public class LastestBlockProcessorJob extends AbstractBlockProcessorJob{
 
 	
 	private Jongo jongo;
@@ -28,7 +28,7 @@ public class LastBlockProcessorJob extends AbstractBlockProcessorJob{
 	private TronHookNodeConfig config;
 	
 	@Inject
-	public LastBlockProcessorJob(Jongo jongo,TronFullNodeCli fullCli,BlockProcessorService processor,TronHookNodeConfig config) {
+	public LastestBlockProcessorJob(Jongo jongo,TronFullNodeCli fullCli,BlockProcessorService processor,TronHookNodeConfig config) {
 		super(config);
 		this.jongo = jongo;
 		this.fullCli = fullCli;
@@ -44,7 +44,11 @@ public class LastBlockProcessorJob extends AbstractBlockProcessorJob{
 			return;
 		}
 		
-		this.processBatch(10, 10, 1, 0);
+		int batchSize = this.config.getLastestBlocksJobConfig().getBatchSize();
+		int workerBatchSize = this.config.getLastestBlocksJobConfig().getWorkerBatchSize();
+		int workers = this.config.getLastestBlocksJobConfig().getWorkers();
+		
+		this.processBatch(batchSize, workerBatchSize, workers, 0);
 	}
 	
 	@Override

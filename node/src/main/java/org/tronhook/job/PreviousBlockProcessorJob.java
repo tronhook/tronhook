@@ -22,7 +22,7 @@ import com.google.inject.Singleton;
 
 @DisallowConcurrentExecution
 @Singleton
-public class UnprocessedBlockProcessorJob extends AbstractBlockProcessorJob{
+public class PreviousBlockProcessorJob extends AbstractBlockProcessorJob{
 
 	
 	private Jongo jongo;
@@ -32,7 +32,7 @@ public class UnprocessedBlockProcessorJob extends AbstractBlockProcessorJob{
 	private TronHookNodeConfig config;
 	
 	@Inject
-	public UnprocessedBlockProcessorJob(Jongo jongo,BlockProcessorService processor,TronHookNodeConfig config,LastBlockCache lastBlockCache) {
+	public PreviousBlockProcessorJob(Jongo jongo,BlockProcessorService processor,TronHookNodeConfig config,LastBlockCache lastBlockCache) {
 		super(config);
 		this.jongo = jongo;
 		this.processor = processor;
@@ -45,7 +45,12 @@ public class UnprocessedBlockProcessorJob extends AbstractBlockProcessorJob{
 	
 	@Scheduled("200ms")
 	public void processBlocks() {
-		this.processBatch(200, 20, 10, 0);
+		
+		int batchSize = this.config.getPreviousBlocksJobConfig().getBatchSize();
+		int workerBatchSize = this.config.getPreviousBlocksJobConfig().getWorkerBatchSize();
+		int workers = this.config.getPreviousBlocksJobConfig().getWorkers();
+		
+		this.processBatch(batchSize, workerBatchSize,workers, 0);
 
 	}
 	

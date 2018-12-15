@@ -9,8 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tronhook.job.BlockRefJob;
 import org.tronhook.job.LastBlockCache;
-import org.tronhook.job.LastBlockProcessorJob;
-import org.tronhook.job.UnprocessedBlockProcessorJob;
+import org.tronhook.job.LastestBlockProcessorJob;
+import org.tronhook.job.PreviousBlockProcessorJob;
 
 import io.trxplorer.troncli.TronFullNodeCli;
 import io.trxplorer.troncli.TronSolidityNodeCli;
@@ -27,7 +27,7 @@ public class TronHookNodeApp extends Jooby {
 	
 		
 		use(new Quartz(BlockRefJob.class,
-				LastBlockProcessorJob.class,
+				LastestBlockProcessorJob.class,
 				LastBlockCache.class
 				//UnprocessedBlockProcessorJob.class
 				));
