@@ -28,8 +28,8 @@ public class TronHookNodeApp extends Jooby {
 		
 		use(new Quartz(BlockRefJob.class,
 				LastBlockProcessorJob.class,
-				LastBlockCache.class,
-				UnprocessedBlockProcessorJob.class
+				LastBlockCache.class
+				//UnprocessedBlockProcessorJob.class
 				));
 		
 		

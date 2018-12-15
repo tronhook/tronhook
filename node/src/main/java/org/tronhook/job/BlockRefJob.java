@@ -30,7 +30,7 @@ public class BlockRefJob {
 		this.config = config;
 	}
 	
-	@Scheduled("1s")
+	@Scheduled("2s")
 	public void addBlockRefs() {
 		
 		MongoCollection blocks = this.jongo.getCollection((this.config.getHookId()+"_"+this.config.getNodeId()+"_blocks").toLowerCase());
@@ -53,7 +53,7 @@ public class BlockRefJob {
 			bulk.insert(newDoc);
 			
 			
-			if (batchSize==100000) {				
+			if (batchSize==this.config.getBlockRefBatchSize()) {				
 				bulk.execute();
 				batchSize = 0;
 				break;
