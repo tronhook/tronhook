@@ -41,9 +41,10 @@ public class TronHookNodeApp extends Jooby {
 			Jongo jongo = registry.require(Jongo.class);
 			
 			TronHookNodeConfig config = registry.require(TronHookNodeConfig.class);
-
-			jongo.getCollection(Helper.getBlockCollectionName(config)).ensureIndex("{tries:1}");
+			//ensure mongo indexes
+			jongo.getCollection(Helper.getBlockCollectionName(config)).ensureIndex("{tries:1}","{background:true}");
 			jongo.getCollection(Helper.getBlockCollectionName(config)).ensureIndex("{processed:1}","{background:true}");
+			jongo.getCollection(Helper.getBlockCollectionName(config)).ensureIndex("{tries:1,processed:1}","{background:true}");
 		});
 		
 		onStop((registry)->{
