@@ -2,7 +2,7 @@
 
 TronHook is an extensible and scalable block/data processor for Tron blockchain backed with a rule engine.
 
-If you are creating a Dapp based on Tron or simply need to get some data, TronHook can help you to get the data that you need without constantly polling data from explorers API or having to do your own blockchain scanner from scratch.
+If you are creating a Dapp based on Tron or simply need to get some data, TronHook can help you to get the data that you need without constantly polling data from explorers API or having to do your own blockchain processor from scratch.
 
 Some usecases TronHook can help with:
 
@@ -34,6 +34,8 @@ Synchronizes the blocks into an elasticsearch database
 hook="org.tronhook.hook.elastic.BlockSyncHook"
 
 BlockSyncES{
+	soliditynode=${tron.soliditynode} #solidity node to use (only used if node type is set to solidity)
+	fetchFee=false #should tx fees be retrieved while processing transactions ? (only used if node type is set to solidity)
 	elasticsearch{
 		host="<HOST>"
 		port=<PORT>
@@ -47,7 +49,7 @@ Synchronizes the accounts into an elasticsearch database
 
 ## NotificationHook
 
-## ConfirmationHook
+
 
 
 
@@ -72,6 +74,13 @@ application {
 
 db = <mongodburl> # mongodb connection url
 
+#Tron nodes configuration
+tron{
+	fullnode="<FULL_NODE_HOST>"
+	soliditynode="<SOLIDITY_NODE_HOST>"
+	mainNet=true
+}
+
 nodeId=1 #useful if you want to start multiple nodes to process the same hook in parell
 
 #Specify the qualified name of the Hook to use
@@ -81,12 +90,22 @@ hook = "org.tronhook.XXX" # For example: org.tronhook.hook.elastic.BlockSyncHook
 blockStart=0 # The block from which this node should start processing
 blockStop=-1 # The block to which this node should stop processing (-1 means until last available blocks)
 blockRefBatchSize=100000 #Block reference batch size
-
-tron{
-	fullnode="<FULL_NODE_HOST>"
-	soliditynode="<SOLIDITY_NODE_HOST>"
-	mainNet=true
+node=[full|solidity]
+#Latest block processor configuration
+latestBlocks{
+	enabled=true
+	batchSize=1
+	workers=1
+	workerBatchSize=1
 }
+#Previous block processor configuration
+previousBlocks{
+	enabled=true
+	batchSize=1000
+	workers=10
+	workerBatchSize=100	
+}
+
 
 ```
 
