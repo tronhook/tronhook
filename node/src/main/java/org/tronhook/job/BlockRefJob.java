@@ -4,6 +4,7 @@ import org.jongo.Jongo;
 import org.jongo.MongoCollection;
 import org.jooby.quartz.Scheduled;
 import org.quartz.DisallowConcurrentExecution;
+import org.tronhook.Helper;
 import org.tronhook.TronHookNodeConfig;
 import org.tronhook.model.BlockRef;
 
@@ -33,7 +34,7 @@ public class BlockRefJob {
 	@Scheduled("2s")
 	public void addBlockRefs() {
 		
-		MongoCollection blocks = this.jongo.getCollection((this.config.getHookId()+"_"+this.config.getNodeId()+"_blocks").toLowerCase());
+		MongoCollection blocks = this.jongo.getCollection(Helper.getBlockCollectionName(config));
 		
 		long lastBlockNum = this.fullCli.getLastBlock().getBlockHeader().getRawData().getNumber();
 		

@@ -5,7 +5,7 @@ public class Helper {
 	
 	public static String getBlockCollectionName(TronHookNodeConfig config) {
 		
-		return (config.getHookId()+"_"+config.getNodeId()+"_blocks").toLowerCase();
+		return (config.getHookId()+"_"+config.getNodeId()+"_"+config.getNodeType()+"_blocks").toLowerCase();
 	}
 	
 }

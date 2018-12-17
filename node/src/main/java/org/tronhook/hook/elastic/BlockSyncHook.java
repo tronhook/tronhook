@@ -1,12 +1,17 @@
 package org.tronhook.hook.elastic;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
+import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.tron.protos.Protocol.TransactionInfo;
@@ -146,8 +151,11 @@ public class BlockSyncHook extends AbstractESHook{
 	@Override
 	public void onNodeStart() {
 		super.onNodeStart();
+		
+		
 		this.tronSolidityCli = new TronSolidityNodeCli(this.getConfig().getString("soliditynode"), true);
-	}
+		
 	
+	}	
 	
 }

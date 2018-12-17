@@ -8,6 +8,7 @@ import java.util.concurrent.ExecutionException;
 import org.quartz.Job;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tronhook.Helper;
 import org.tronhook.TronHookNodeConfig;
 
 public abstract class AbstractBlockProcessorJob {
@@ -79,7 +80,7 @@ public abstract class AbstractBlockProcessorJob {
 
 	
 	public String getBlocksCollectionName() {
-		return (this.config.getHookId()+"_"+this.config.getNodeId()+"_blocks").toLowerCase();
+		return Helper.getBlockCollectionName(config);
 	}
 	
 	protected Long getStopBlock() {

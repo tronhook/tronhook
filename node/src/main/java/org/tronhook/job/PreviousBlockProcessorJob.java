@@ -56,35 +56,7 @@ public class PreviousBlockProcessorJob extends AbstractBlockProcessorJob{
 
 	}
 	
-//	@Scheduled("200ms")
-//	public void processBlocks2() {
-//		this.processBatch(1000, 100, 10, 0);
-//
-//	}
-//	
-	
-//	@Scheduled("1s")
-//	public void populateQueue() throws InterruptedException {
-//
-//		
-//		if (unprocessedBlockPool.size()>0) {
-//			return;
-//		}
-//
-//
-//		
-//		MongoCursor<BlockRef> blocks = this.jongo.getCollection(getBlocksCollectionName()).find("{tries:{ $gte :  0, $lt : 3},processed:0,_id:{$gte :  #, $lte : #,$nin:#}}",this.config.getBlockStart(),this.getStopBlock(),this.unprocessedBlockPool).sort("{_id:1}").limit(10000).as(BlockRef.class);
-//
-//		List<Long> result= new ArrayList<>();
-//		
-//		while(blocks.hasNext()) {
-//			
-//			unprocessedBlockPool.put(blocks.next().getNumber());
-//			
-//		}		
-//		
-//	}
-	
+
 	
 	@Override
 	protected List<Long> getBlocks(int maxBatchSize) {
@@ -100,10 +72,7 @@ public class PreviousBlockProcessorJob extends AbstractBlockProcessorJob{
 			result.add(blocks.next().getNumber());
 			
 		}
-	
-//		List<Long> result= new ArrayList<>();
-//		
-//		unprocessedBlockPool.drainTo(result, 1000);
+
 		
 		
 		return result;
@@ -121,18 +90,7 @@ public class PreviousBlockProcessorJob extends AbstractBlockProcessorJob{
 	
 
 	
-//	public static void main(String[] args) throws IOException {
-//		
-//		
-//		ExecutorService e = Executors.newFixedThreadPool(2);
-//		
-//		e.submit(()->{
-//			
-//			System.out.println("");
-//			
-//		});
-//		
-//	}
+
 	
 	
 }
