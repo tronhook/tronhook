@@ -40,6 +40,10 @@ public class LastestBlockProcessorJob extends AbstractBlockProcessorJob{
 	@Scheduled("200ms")
 	public void processBlocks() {
 		
+		if (!this.config.getLastestBlocksJobConfig().isElabled()) {
+			return;
+		}
+		
 		//does not run if last block !=-1
 		if (this.config.getBlockStop()!=-1) {
 			return;

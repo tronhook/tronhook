@@ -44,6 +44,10 @@ public class PreviousBlockProcessorJob extends AbstractBlockProcessorJob{
 	@Scheduled("200ms")
 	public void processBlocks() {
 		
+		if (!this.config.getPreviousBlocksJobConfig().isElabled()) {
+			return;
+		}
+		
 		int batchSize = this.config.getPreviousBlocksJobConfig().getBatchSize();
 		int workerBatchSize = this.config.getPreviousBlocksJobConfig().getWorkerBatchSize();
 		int workers = this.config.getPreviousBlocksJobConfig().getWorkers();

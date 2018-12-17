@@ -14,24 +14,21 @@ public abstract class TronHook implements ITronHook{
 	
 	private BlockInfo blockInfo;
 	
+	private NodeType nodeType;
+	
 	public TronHook(Config config) {
 		this.config = config;
 	}
-	
-	
+
 	public abstract void processBlocks(List<BlockModel> blocks) throws TronHookException;
-	
+
 	protected Config getConfig() {
 		return this.config;
 	}
 
-
-
 	public BlockInfo getBlockInfo() {
 		return blockInfo;
 	}
-
-
 
 
 	public void setBlockInfo(BlockInfo blockInfo) {
@@ -39,7 +36,13 @@ public abstract class TronHook implements ITronHook{
 	}
 
 
-
+	public void setNodeType(NodeType nodeType) {
+		this.nodeType = nodeType;
+	}
+	
+	public NodeType getNodeType() {
+		return nodeType;
+	}
 
 	public void setConfig(Config config) {
 		this.config = config;

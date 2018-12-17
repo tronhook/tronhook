@@ -83,11 +83,21 @@ public abstract class AbstractBlockProcessorJob {
 	}
 	
 	protected Long getStopBlock() {
-		Long lastBlockFull = this.lastBlockCache.getLastBlockFull(); 
+		//by default use full node
+		Long lastBlock = this.lastBlockCache.getLastBlockFull(); 
 		
-		lastBlockFull = lastBlockFull==null ? 0 : lastBlockFull;
+		lastBlock = lastBlock==null ? 0 : lastBlock;
 		
-		long stopBlock = this.config.getBlockStop()== - 1 ? lastBlockFull : this.config.getBlockStop();
+		//use solidity block if specified otherwise in config
+		if (this.config.getNodeType().equals("solidity")) {
+			
+			lastBlock = this.lastBlockCache.getLastBlockSolidity(); 
+			
+			lastBlock = lastBlock==null ? 0 : lastBlock;			
+			
+		}
+		
+		long stopBlock = this.config.getBlockStop()== - 1 ? lastBlock : this.config.getBlockStop();
 		
 		return stopBlock;
 	}

@@ -9,13 +9,8 @@ public class BlockInfo {
 	
 	private Long lastSolidityBlock;
 
-	private List<Long> unprocessedBlocks;
-	
-	private List<Long> removeTry;
 	
 	public BlockInfo() {
-		this.unprocessedBlocks = new ArrayList<>();
-		this.removeTry = new ArrayList<>();
 	}
 	
 	public Long getLastFullBlock() {
@@ -34,12 +29,6 @@ public class BlockInfo {
 		this.lastSolidityBlock = getLastSolidityBlock;
 	}
 	
-	public void addUnprocessedBlock(Long num) {
-		this.unprocessedBlocks.add(num);
-	}
-	
-	public void addRemoveTry(Long num) {
-		this.removeTry.add(num);
-	}
+
 	
 }

@@ -1,10 +1,14 @@
 package org.tronhook.service;
 
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.SpelCompilerMode;
@@ -16,6 +20,7 @@ import org.tronhook.Helper;
 import org.tronhook.TronHookNodeConfig;
 import org.tronhook.api.BlockInfo;
 import org.tronhook.api.ITronHook;
+import org.tronhook.api.NodeType;
 import org.tronhook.api.TronHook;
 import org.tronhook.api.TronHookException;
 import org.tronhook.api.model.BlockModel;
@@ -28,6 +33,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.BulkWriteOperation;
 
 import io.trxplorer.troncli.TronFullNodeCli;
+import io.trxplorer.troncli.TronSolidityNodeCli;
 
 public class BlockProcessorService {
 
@@ -36,12 +42,17 @@ public class BlockProcessorService {
 	private TronFullNodeCli fullCli;
 	private LastBlockCache lbCache;
 	private TronHookNodeConfig config;
+	private TronSolidityNodeCli solidityCli;
+	
+	private static final String FULL_NODE_TYPE = "full";
+	private static final String SOLIDITY_NODE_TYPE = "solidity";
 	
 	@Inject
-	public BlockProcessorService(ITronHook hook,Jongo jongo,TronFullNodeCli fullCli,LastBlockCache lbCache,TronHookNodeConfig config) {
+	public BlockProcessorService(ITronHook hook,Jongo jongo,TronFullNodeCli fullCli,TronSolidityNodeCli solidityCli,LastBlockCache lbCache,TronHookNodeConfig config) {
 		this.hook = hook;
 		this.jongo = jongo;
 		this.fullCli = fullCli;
+		this.solidityCli = solidityCli;
 		this.lbCache = lbCache;
 		this.config = config;
 	}
@@ -50,8 +61,19 @@ public class BlockProcessorService {
 	public void processBlocks(List<Long> blocksNums) {
 		
 		try {
-
-			List<Block> blocks = this.fullCli.getBlockByNums(blocksNums);
+			
+			getLogger().info("Processing blocks: {}",blocksNums);
+			
+			List<Block> blocks = Collections.emptyList(); 
+			
+			NodeType nodeType = NodeType.FULL;
+			if (this.config.getNodeType().toLowerCase().equals(SOLIDITY_NODE_TYPE)) {
+				blocks = this.solidityCli.getBlocksByNums(blocksNums);
+				nodeType = nodeType.SOLIDITY;
+			}else {
+				blocks = this.fullCli.getBlockByNums(blocksNums);
+			}
+				
 			
 			List<BlockModel> parsedBlocks = BlockParser.parseBlocks(blocks);
 			
@@ -84,6 +106,7 @@ public class BlockProcessorService {
 				BlockInfo bi = new BlockInfo();
 				bi.setLastFullBlock(lbCache.getLastBlockFull());
 				bi.setLastSolidityBlock(lbCache.getLastBlockSolidity());
+				thook.setNodeType(nodeType);
 				thook.setBlockInfo(bi);
 				thook.processBlocks(parsedBlocks);
 			}
@@ -101,25 +124,33 @@ public class BlockProcessorService {
 		
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws BlockParserException {
 		
+		TronSolidityNodeCli cli = new TronSolidityNodeCli("127.0.0.1:50051", true);
 		
-		SpelParserConfiguration config = new SpelParserConfiguration(SpelCompilerMode.IMMEDIATE,
-			    BlockProcessorService.class.getClassLoader());
+		BlockParser.parseBlocks(cli.getBlocksByNums(Arrays.asList(5008683l, 5008682l, 5008681l, 5008680l, 5008679l)));
 
-			SpelExpressionParser parser = new SpelExpressionParser(config);
-
-			Expression expr = (Expression) parser.parseExpression("hash=='123'");
-
-			BlockModel bm = new BlockModel();
-			bm.setHash("123");
-			
-			EvaluationContext context = SimpleEvaluationContext.forReadOnlyDataBinding().withRootObject(bm).build();
-
-			boolean rule = expr.getValue(context,Boolean.class);
 		
+//		SpelParserConfiguration config = new SpelParserConfiguration(SpelCompilerMode.IMMEDIATE,
+//			    BlockProcessorService.class.getClassLoader());
+//
+//			SpelExpressionParser parser = new SpelExpressionParser(config);
+//
+//			Expression expr = (Expression) parser.parseExpression("hash=='123'");
+//
+//			BlockModel bm = new BlockModel();
+//			bm.setHash("123");
+//			
+//			EvaluationContext context = SimpleEvaluationContext.forReadOnlyDataBinding().withRootObject(bm).build();
+//
+//			boolean rule = expr.getValue(context,Boolean.class);
+//		
 			
 			
+	}
+	
+	public Logger getLogger() {
+		return LoggerFactory.getLogger(getClass());
 	}
 	
 }

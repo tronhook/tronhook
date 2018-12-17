@@ -1,7 +1,5 @@
 package org.tronhook;
 
-import java.util.List;
-
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.typesafe.config.Config;
@@ -37,6 +35,9 @@ public class TronHookNodeConfig{
 		return this.config.getInt("blockRefBatchSize");
 	}
 	
+	public String getNodeType() {
+		return this.config.getString("node");
+	}
 	
 	public JobConfig getLastestBlocksJobConfig() {
 		return new JobConfig(this.config.getConfig("latestBlocks"));
@@ -65,6 +66,10 @@ public class TronHookNodeConfig{
 		
 		public int getWorkerBatchSize() {
 			return this.config.getInt("workerBatchSize");
+		}
+		
+		public boolean isElabled() {
+			return this.config.getBoolean("enabled");
 		}
 		
 		
