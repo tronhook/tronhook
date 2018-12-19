@@ -7,6 +7,7 @@ import java.util.Map;
 import org.tronhook.api.TronHook;
 import org.tronhook.api.TronHookException;
 import org.tronhook.api.model.BlockModel;
+import org.tronhook.api.model.TransactionModel;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mashape.unirest.http.ObjectMapper;
@@ -57,8 +58,8 @@ public class NotificationHook extends TronHook{
 
 	@Override
 	public void processBlocks(List<BlockModel> blocks) throws TronHookException {
-			
-		
+
+				
 			Map<String, List<Object>> rules = getMatchingRules();
 			
 
@@ -75,11 +76,6 @@ public class NotificationHook extends TronHook{
 				}				
 			}
 
-				
-				
-		
-			
-		
 		
 	}
 

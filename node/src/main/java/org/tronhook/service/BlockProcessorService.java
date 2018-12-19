@@ -194,6 +194,8 @@ public class BlockProcessorService {
 				
 				TransactionModel tx = it.next();
 				
+				boolean hasMatchingRule = false;
+				
 				for(Rule rule:txRules) {
 					
 					Expression expr = (Expression) spelParser.parseExpression(rule.getRule());
@@ -203,9 +205,15 @@ public class BlockProcessorService {
 					
 					if (ruleMatch) {
 						addRule(rule.getId(),tx, matchingRules);
+						hasMatchingRule = true;
 					}
 					
-				}				
+				}
+				
+				//remove tx matching no rules at all 
+				if (txRules.size()>0 && hasMatchingRule==false) {
+					it.remove();
+				}
 				
 			}
 			
