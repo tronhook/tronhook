@@ -10,11 +10,22 @@ public class Rule {
 	
 	private String repeat;
 	
+	private boolean valid;
+	
 	public Rule() {
+		this.valid = true;
 	}
 	
 	public void setId(String id) {
 		this.id = id;
+	}
+	
+	public void setValid(boolean valid) {
+		this.valid = valid;
+	}
+	
+	public boolean isValid() {
+		return valid;
 	}
 	
 	public String getId() {
