@@ -28,8 +28,7 @@ Here are some examples of rules:
 
 **Match all  transaction of type "TransferContract" **
 ```bash
-curl -X POST "localhost:7171/rule" -H 'Content-Type: application/json' -d
-'
+curl -X POST "localhost:7171/rule" -H 'Content-Type: application/json' -d'
 {
 	"id":"contract_trigger",
 	"rule":"type==1",
@@ -40,8 +39,7 @@ curl -X POST "localhost:7171/rule" -H 'Content-Type: application/json' -d
 ```
 **Match a  transaction once with specific hash and tx is confirmed**
 ```bash
-curl -X POST "localhost:7171/rule" -H 'Content-Type: application/json' -d
-'
+curl -X POST "localhost:7171/rule" -H 'Content-Type: application/json' -d'
 {
 	"id":"contract_trigger",
 	"rule":"hash=='5a2e60fe45906668fa59fd9f9d414209106f51fd52ac7176104bc0b31c66dfff' and confirmed==true",
@@ -53,8 +51,7 @@ curl -X POST "localhost:7171/rule" -H 'Content-Type: application/json' -d
 
 **Match all  transactions of type "TriggerContract" with a  specific contract address**
 ```bash
-curl -X POST "localhost:7171/rule" -H 'Content-Type: application/json' -d
-'
+curl -X POST "localhost:7171/rule" -H 'Content-Type: application/json' -d'
 {
 	"id":"contract_trigger",
 	"rule":"tx.type==31 and contract.contractAddress=='TEEXEWrkMFKapSMJ6mErg39ELFKDqEs6w3'",
@@ -224,3 +221,6 @@ Once that you have created your configuration file you can launch a node like th
 ```
 docker run -p 7171:7171 --name tronhook.blocks -d -v application.prod.conf:/application.prod.conf -e APP_OPTS="prod" tronhook/node
 ```
+
+# Writing your own Hook
+TODO
