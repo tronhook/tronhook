@@ -1,9 +1,12 @@
 package org.tronhook.api;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.tronhook.api.model.BlockModel;
+import org.tronhook.api.model.Rule;
 import org.tronhook.api.model.TransactionModel;
 
 import com.typesafe.config.Config;
@@ -16,8 +19,11 @@ public abstract class TronHook implements ITronHook{
 	
 	private NodeType nodeType;
 	
+	private Map<String,List<Object>> matchingRules;
+	
 	public TronHook(Config config) {
 		this.config = config;
+		this.matchingRules = new HashMap<String,List<Object>>();
 	}
 
 	public abstract void processBlocks(List<BlockModel> blocks) throws TronHookException;
@@ -58,6 +64,14 @@ public abstract class TronHook implements ITronHook{
 		}
 		
 		return transactions;
+	}
+	
+	public void setMatchingRules(Map<String, List<Object>> matchingRules) {
+		this.matchingRules = matchingRules;
+	}
+	
+	public Map<String, List<Object>> getMatchingRules() {
+		return matchingRules;
 	}
 	
 	

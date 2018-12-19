@@ -1,16 +1,22 @@
 package org.tronhook;
 
+
 import org.jongo.Jongo;
 import org.jooby.Jooby;
+import org.jooby.json.Jackson;
 import org.jooby.mongodb.Jongoby;
 import org.jooby.mongodb.Mongodb;
 import org.jooby.quartz.Quartz;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tronhook.api.model.BlockModel;
+import org.tronhook.api.model.Rule;
 import org.tronhook.job.BlockRefJob;
 import org.tronhook.job.LastBlockCache;
 import org.tronhook.job.LastestBlockProcessorJob;
 import org.tronhook.job.PreviousBlockProcessorJob;
+import org.tronhook.job.RulesFetcherJob;
+import org.tronhook.service.RuleService;
 
 import io.trxplorer.troncli.TronFullNodeCli;
 import io.trxplorer.troncli.TronSolidityNodeCli;
@@ -24,12 +30,13 @@ public class TronHookNodeApp extends Jooby {
 		use(new Mongodb());
 		use(new Jongoby());
 		use(new TronHookNodeModule());
-	
+		use(new Jackson());
 		
 		use(new Quartz(BlockRefJob.class,
 				LastestBlockProcessorJob.class,
 				PreviousBlockProcessorJob.class,
-				LastBlockCache.class
+				LastBlockCache.class,
+				RulesFetcherJob.class
 				));
 		
 		
@@ -45,6 +52,7 @@ public class TronHookNodeApp extends Jooby {
 			jongo.getCollection(Helper.getBlockCollectionName(config)).ensureIndex("{tries:1}","{background:true}");
 			jongo.getCollection(Helper.getBlockCollectionName(config)).ensureIndex("{processed:1}","{background:true}");
 			jongo.getCollection(Helper.getBlockCollectionName(config)).ensureIndex("{tries:1,processed:1}","{background:true}");
+			jongo.getCollection("rules").ensureIndex("{id:1}","{background:true}");
 		});
 		
 		onStop((registry)->{
@@ -65,8 +73,22 @@ public class TronHookNodeApp extends Jooby {
 		});
 		
 		post("/rule", (req, res) -> {
-
-			res.send("");
+			
+			Rule rule = req.body(Rule.class);
+			
+			RuleService service = req.require(RuleService.class);
+			
+			service.addOrUpdateRule(rule);
+			
+			res.send(rule);
+		});
+		
+		post("/test", (req, res) -> {
+			System.out.println(req.body().value());
+			
+			
+			
+			res.send(true);
 		});
 
 	}

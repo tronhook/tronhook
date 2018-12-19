@@ -1,23 +1,25 @@
-package org.tronhook.model;
+package org.tronhook.api.model;
 
 public class Rule {
-
-	private String _id;
+	
+	private String id;
 	
 	private String context;
-	
-	private String name;
 	
 	private String rule;
 	
 	private String repeat;
 	
-	private boolean confirmed;
-
-	public String getId() {
-		return _id;
+	public Rule() {
 	}
-
+	
+	public void setId(String id) {
+		this.id = id;
+	}
+	
+	public String getId() {
+		return id;
+	}
 
 	public String getContext() {
 		return context;
@@ -25,14 +27,6 @@ public class Rule {
 
 	public void setContext(String context) {
 		this.context = context;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public String getRule() {
@@ -51,13 +45,6 @@ public class Rule {
 		this.repeat = repeat;
 	}
 
-	public boolean isConfirmed() {
-		return confirmed;
-	}
-
-	public void setConfirmed(boolean confirmed) {
-		this.confirmed = confirmed;
-	}
 	
 	
 	

@@ -7,19 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.jooby.Env;
 import org.jooby.Jooby.Module;
-import org.quartz.Job;
-import org.quartz.JobBuilder;
-import org.quartz.JobKey;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.SchedulerFactory;
-import org.quartz.SimpleScheduleBuilder;
-import org.quartz.SimpleTrigger;
-import org.quartz.TriggerBuilder;
-import org.quartz.TriggerKey;
-import org.quartz.impl.StdSchedulerFactory;
 import org.tronhook.api.ITronHook;
-import org.tronhook.job.JobTest;
 
 import com.google.inject.Binder;
 import com.google.inject.Singleton;
@@ -39,40 +27,6 @@ public class TronHookNodeModule implements Module{
 	public void configure(Env env, Config conf, Binder binder) throws Throwable {
 		
 
-		
-		
-		
-		
-//		SchedulerFactory sf = new StdSchedulerFactory();
-//		Scheduler sched = sf.getScheduler();
-//		
-//			Class<? extends Job> jobClass = JobTest.class;
-//			
-//			for (int i = 0; i < 10; i++) {
-//
-//				  JobBuilder job1 = JobBuilder.newJob(jobClass)
-//					        .withIdentity(
-//					            JobKey.jobKey(jobClass.getSimpleName()+"-"+i, jobClass.getPackage().getName())
-//					        );
-//		  
-//				  
-//					    SimpleTrigger trigger = TriggerBuilder.newTrigger()
-//					        .withIdentity(
-//					            TriggerKey.triggerKey(jobClass.getSimpleName()+"-"+i, jobClass.getPackage().getName())
-//					        )
-//					        .withSchedule(SimpleScheduleBuilder
-//					                .simpleSchedule().withIntervalInSeconds(2+i).repeatForever())
-//					        
-//					        .build()
-//					        ;
-//				
-//				sched.scheduleJob(job1.build(), trigger);
-//				
-//			}
-//
-//
-//		
-//		sched.start();	  
 			    
 		env.onStart((r)->{
 			

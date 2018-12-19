@@ -1,9 +1,12 @@
 package org.tronhook.service;
 
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
@@ -24,17 +27,21 @@ import org.tronhook.api.NodeType;
 import org.tronhook.api.TronHook;
 import org.tronhook.api.TronHookException;
 import org.tronhook.api.model.BlockModel;
+import org.tronhook.api.model.Rule;
+import org.tronhook.api.model.TransactionModel;
 import org.tronhook.api.parser.BlockParser;
 import org.tronhook.api.parser.BlockParserException;
 import org.tronhook.job.LastBlockCache;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.mongodb.BasicDBObject;
 import com.mongodb.BulkWriteOperation;
 
 import io.trxplorer.troncli.TronFullNodeCli;
 import io.trxplorer.troncli.TronSolidityNodeCli;
 
+@Singleton
 public class BlockProcessorService {
 
 	private ITronHook hook;
@@ -47,6 +54,10 @@ public class BlockProcessorService {
 	private static final String FULL_NODE_TYPE = "full";
 	private static final String SOLIDITY_NODE_TYPE = "solidity";
 	
+	private List<Rule> txRules = new ArrayList<>();
+	private List<Rule> blockRules = new ArrayList<>();
+	private SpelExpressionParser spelParser;
+	
 	@Inject
 	public BlockProcessorService(ITronHook hook,Jongo jongo,TronFullNodeCli fullCli,TronSolidityNodeCli solidityCli,LastBlockCache lbCache,TronHookNodeConfig config) {
 		this.hook = hook;
@@ -55,10 +66,16 @@ public class BlockProcessorService {
 		this.solidityCli = solidityCli;
 		this.lbCache = lbCache;
 		this.config = config;
+		
+		SpelParserConfiguration spelConfig = new SpelParserConfiguration(SpelCompilerMode.IMMEDIATE,
+	    BlockProcessorService.class.getClassLoader());
+
+		this.spelParser = new SpelExpressionParser(spelConfig);
+
 	}
 	
 	
-	public void processBlocks(List<Long> blocksNums) {
+	public synchronized void processBlocks(List<Long> blocksNums) {
 		
 		try {
 			
@@ -80,6 +97,14 @@ public class BlockProcessorService {
 			if (parsedBlocks.size()==0) {
 				return;
 			}
+			
+			Map<String,List<Object>> matchingRules = new HashMap<>();
+			
+			
+			//filter blocks with block rule context
+			List<BlockModel> filteredBlocks = getFilteredBlocks(parsedBlocks, matchingRules);
+			
+			
 			
 			MongoCollection blocksCollection = this.jongo.getCollection(Helper.getBlockCollectionName(config));
 
@@ -108,7 +133,10 @@ public class BlockProcessorService {
 				bi.setLastSolidityBlock(lbCache.getLastBlockSolidity());
 				thook.setNodeType(nodeType);
 				thook.setBlockInfo(bi);
-				thook.processBlocks(parsedBlocks);
+				thook.setMatchingRules(matchingRules);
+				
+				thook.processBlocks(filteredBlocks);
+
 			}
 			
 		
@@ -124,30 +152,94 @@ public class BlockProcessorService {
 		
 	}
 	
-	public static void main(String[] args) throws BlockParserException {
+	private List<BlockModel> getFilteredBlocks(List<BlockModel> parsedBlocks,Map<String, List<Object>> matchingRules) {
+		 
+	
+		ArrayList<BlockModel> result = new ArrayList<>();
 		
-		TronSolidityNodeCli cli = new TronSolidityNodeCli("127.0.0.1:50051", true);
+	
 		
-		BlockParser.parseBlocks(cli.getBlocksByNums(Arrays.asList(5008683l, 5008682l, 5008681l, 5008680l, 5008679l)));
+		
+		//filter blocks
+		for(BlockModel block:parsedBlocks) {
+			
+			for(Rule rule:blockRules) {
+				
+				Expression expr = (Expression) spelParser.parseExpression(rule.getRule());
+				EvaluationContext context = SimpleEvaluationContext.forReadOnlyDataBinding().withRootObject(block).build();
+				
+				boolean ruleMatch = expr.getValue(context,Boolean.class);
+				
+				if (ruleMatch) {
+					result.add(block);
+					addRule(rule.getId(),block, matchingRules);
+				}
+				
+			}
+			
+		}
+		
+		//if not block rules => take them all
+		if (blockRules.size()==0) {
+			result.addAll(parsedBlocks);
+		}
+		
+		
+		//filter transactions
+		for(BlockModel filteredBlock:result) {
+			
+			Iterator<TransactionModel> it = filteredBlock.getTransactions().iterator();
+			
+			while(it.hasNext()) {
+				
+				TransactionModel tx = it.next();
+				
+				for(Rule rule:txRules) {
+					
+					Expression expr = (Expression) spelParser.parseExpression(rule.getRule());
+					EvaluationContext context = SimpleEvaluationContext.forReadOnlyDataBinding().withRootObject(tx).build();
+					
+					boolean ruleMatch = expr.getValue(context,Boolean.class);
+					
+					if (ruleMatch) {
+						addRule(rule.getId(),tx, matchingRules);
+					}
+					
+				}				
+				
+			}
+			
 
+			
+		}
 		
-//		SpelParserConfiguration config = new SpelParserConfiguration(SpelCompilerMode.IMMEDIATE,
-//			    BlockProcessorService.class.getClassLoader());
-//
-//			SpelExpressionParser parser = new SpelExpressionParser(config);
-//
-//			Expression expr = (Expression) parser.parseExpression("hash=='123'");
-//
-//			BlockModel bm = new BlockModel();
-//			bm.setHash("123");
-//			
-//			EvaluationContext context = SimpleEvaluationContext.forReadOnlyDataBinding().withRootObject(bm).build();
-//
-//			boolean rule = expr.getValue(context,Boolean.class);
-//		
-			
-			
+		return result;
+		
+
 	}
+	
+	private void addRule(String ruleId,Object fact,Map<String, List<Object>> matchingRules) {
+		
+		List<Object> facts = matchingRules.get(ruleId);
+		
+		if (facts==null) {
+			facts = new ArrayList<>();
+		}
+		
+		facts.add(fact);
+		
+		matchingRules.put(ruleId, facts);
+	}
+	
+	public void setBlockRules(List<Rule> blockRules) {
+		this.blockRules = blockRules;
+	}
+	
+	public void setTxRules(List<Rule> txRules) {
+		this.txRules = txRules;
+	}
+	
+
 	
 	public Logger getLogger() {
 		return LoggerFactory.getLogger(getClass());

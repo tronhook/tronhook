@@ -71,6 +71,7 @@ public class BlockParser {
 						transaction.setData(rawTransaction.getRawData().getData().toStringUtf8());
 					}
 					
+					transaction.setTimestamp(timestamp.getTime());
 					transaction.setFrom(fromAddress);
 					transaction.setTo(toAddress);
 					transaction.setHash(txHash);
