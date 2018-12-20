@@ -19,7 +19,7 @@
   	<dependency>
   		<groupId>com.github.trxplorer</groupId>
   		<artifactId>tron-java-cli</artifactId>
-  		<version>1.0.0-SNAPSHOT</version>
+  		<version>master-SNAPSHOT</version>
   	</dependency>
 	
 	</dependencies>
