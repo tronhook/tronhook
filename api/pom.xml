@@ -17,13 +17,20 @@
 	
 	<dependencies>
   	<dependency>
-  		<groupId>io.trxplorer</groupId>
-  		<artifactId>tron-cli</artifactId>
+  		<groupId>com.github.trxplorer</groupId>
+  		<artifactId>tron-java-cli</artifactId>
   		<version>1.0.0-SNAPSHOT</version>
   	</dependency>
 	
 	</dependencies>
 	
+	
+	<repositories>
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+	</repositories>
  
 </project>
 
