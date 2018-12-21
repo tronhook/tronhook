@@ -90,20 +90,25 @@ public class NotificationHook extends TronHook{
 			
 			if (protocol.equals("ws")) {
 				
-				com.fasterxml.jackson.databind.ObjectMapper om = new com.fasterxml.jackson.databind.ObjectMapper();
+				if (!rules.isEmpty()) {
 
-				try {
-					String payload = om.writeValueAsString(rules);
+					com.fasterxml.jackson.databind.ObjectMapper om = new com.fasterxml.jackson.databind.ObjectMapper();
 
-					this.wsServer.broadcast(payload);
-				
-				} catch (JsonProcessingException e) {
+					try {
+						String payload = om.writeValueAsString(rules);
+
+						this.wsServer.broadcast(payload);
 					
-					e.printStackTrace();
-					
-					throw new TronHookException("Could not broadcast", e);
+					} catch (JsonProcessingException e) {
+						
+						e.printStackTrace();
+						
+						throw new TronHookException("Could not broadcast", e);
+						
+					}
 					
 				}
+
 				
 			}else {
 
