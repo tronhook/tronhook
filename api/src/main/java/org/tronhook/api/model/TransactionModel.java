@@ -20,7 +20,17 @@ public class TransactionModel {
 	
 	private int size;
 	
+	private boolean confirmed;
+	
 	public TransactionModel() {
+	}
+	
+	public boolean isConfirmed() {
+		return confirmed;
+	}
+	
+	public void setConfirmed(boolean confirmed) {
+		this.confirmed = confirmed;
 	}
 	
 	public int getSize() {

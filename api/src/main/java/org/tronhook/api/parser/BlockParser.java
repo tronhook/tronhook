@@ -18,18 +18,18 @@ import org.tronhook.api.model.TransactionModel;
 
 public class BlockParser {
 
-	public static List<BlockModel> parseBlocks(List<Block> rawBlocks) throws BlockParserException{
+	public static List<BlockModel> parseBlocks(List<Block> rawBlocks,boolean confirmed) throws BlockParserException{
 		
 		ArrayList<BlockModel> result = new ArrayList<>();
 		
 		for(Block rawBlock:rawBlocks) {
-			result.add(parseBlock(rawBlock));
+			result.add(parseBlock(rawBlock,confirmed));
 		}
 		
 		return result;
 	}
 	
-	public static BlockModel parseBlock(Block rawBlock) throws BlockParserException{
+	public static BlockModel parseBlock(Block rawBlock,boolean confirmed) throws BlockParserException{
 		
 		try {
 		   long blockNum = rawBlock.getBlockHeader().getRawData().getNumber();
@@ -51,6 +51,7 @@ public class BlockParser {
 		   block.setTxCount(txCount);
 		   block.setSize(blockSize);
 		   block.setTimestamp(timestamp.getTime());
+		   block.setConfirmed(confirmed);
 		   
 			for (Transaction rawTransaction : rawBlock.getTransactionsList()) {
 
@@ -79,6 +80,7 @@ public class BlockParser {
 					transaction.setBlock(blockNum);
 					transaction.setSize(txSize);
 					transaction.setContract(ContractParser.parse(rawContract));
+					transaction.setConfirmed(confirmed);
 					
 					block.addTransaction(transaction);
 				}

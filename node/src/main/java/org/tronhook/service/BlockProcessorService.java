@@ -84,15 +84,17 @@ public class BlockProcessorService {
 			List<Block> blocks = Collections.emptyList(); 
 			
 			NodeType nodeType = NodeType.FULL;
+			boolean confirmed = false;
 			if (this.config.getNodeType().toLowerCase().equals(SOLIDITY_NODE_TYPE)) {
 				blocks = this.solidityCli.getBlocksByNums(blocksNums);
 				nodeType = nodeType.SOLIDITY;
+				confirmed = true;
 			}else {
 				blocks = this.fullCli.getBlockByNums(blocksNums);
 			}
 				
 			
-			List<BlockModel> parsedBlocks = BlockParser.parseBlocks(blocks);
+			List<BlockModel> parsedBlocks = BlockParser.parseBlocks(blocks,confirmed);
 			
 			if (parsedBlocks.size()==0) {
 				return;
