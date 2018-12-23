@@ -19,6 +19,8 @@ import org.tronhook.job.LastBlockCache;
 import org.tronhook.job.LastestBlockProcessorJob;
 import org.tronhook.job.PreviousBlockProcessorJob;
 import org.tronhook.job.RulesFetcherJob;
+import org.tronhook.model.StatsModel;
+import org.tronhook.service.BlockProcessorService;
 import org.tronhook.service.RuleService;
 
 import io.trxplorer.troncli.TronFullNodeCli;
@@ -70,10 +72,23 @@ public class TronHookNodeApp extends Jooby {
 			
 		});
 		
+		
+		get("/stats", (req, res) -> {
+			
+			StatsModel stats  = new StatsModel();
+			
+			BlockProcessorService bpService = req.require(BlockProcessorService.class);
+			
+			stats.setLastProcessedBlock(bpService.getLastProcessedBlock());
 
+			res.send(stats);
+		});
+		
 		get("/rules", (req, res) -> {
 
-			res.send("");
+			RuleService service = req.require(RuleService.class);
+
+			res.send(service.getRules());
 		});
 		
 		get("/rule/:id", (req, res) -> {

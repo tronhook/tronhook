@@ -1,7 +1,12 @@
 package org.tronhook.service;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
+import org.jongo.MongoCursor;
 import org.tronhook.api.model.Rule;
 
 import com.google.inject.Inject;
@@ -31,7 +36,22 @@ public class RuleService {
 		return this.rulesCollection.findOne("{id:#}",id).as(Rule.class);
 		
 	}
-
+	
+	public List<Rule> getRules(){
+		
+		MongoCursor<Rule> res = this.rulesCollection.find().as(Rule.class);
+		
+		Iterator<Rule> it = res.iterator();
+		
+		ArrayList<Rule> rules = new ArrayList<>();
+		
+		while(it.hasNext()) {
+			rules.add(it.next());
+		}
+		
+		return rules;
+	}
+	
 	public boolean getRemoveRuleById(String id) {
 		
 		WriteResult result = this.rulesCollection.remove("{id:#}",id);

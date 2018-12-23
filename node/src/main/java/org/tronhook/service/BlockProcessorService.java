@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
+import org.jongo.MongoCursor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.expression.EvaluationContext;
@@ -32,6 +33,7 @@ import org.tronhook.api.model.TransactionModel;
 import org.tronhook.api.parser.BlockParser;
 import org.tronhook.api.parser.BlockParserException;
 import org.tronhook.job.LastBlockCache;
+import org.tronhook.model.BlockRef;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -245,7 +247,18 @@ public class BlockProcessorService {
 		this.txRules = txRules;
 	}
 	
-
+	public long getLastProcessedBlock() {
+		MongoCollection blocksCollection = this.jongo.getCollection(Helper.getBlockCollectionName(config));
+		MongoCursor<BlockRef> res = blocksCollection.find("{processed:1}").sort("{_id:-1}").as(BlockRef.class);
+		
+		if (res!=null && res.hasNext()) {
+			
+			return res.next().getNumber();
+			
+		}
+		
+		return -1;
+	}
 	
 	public Logger getLogger() {
 		return LoggerFactory.getLogger(getClass());
