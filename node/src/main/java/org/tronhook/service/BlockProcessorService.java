@@ -138,11 +138,7 @@ public class BlockProcessorService {
 				thook.processBlocks(filteredBlocks);
 
 			}
-			
-		
-			
 
-			
 		} catch (BlockParserException | TronHookException e) {
 
 			e.printStackTrace();

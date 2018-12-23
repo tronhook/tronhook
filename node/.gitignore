@@ -1,6 +1,7 @@
 node_modules
 app/target
 target/
+conf/application.dev.conf
 .settings
 .classpath
 .project
