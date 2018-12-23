@@ -47,6 +47,9 @@ public class TronHookNodeConfig{
 		return new JobConfig(this.config.getConfig("previousBlocks"));
 	}
 	
+	public boolean clearRules() {
+		return this.config.getBoolean("clearRules");
+	}
 	
 	public static class JobConfig{
 		

@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tronhook.api.model.Rule;
 import org.tronhook.job.BlockRefJob;
+import org.tronhook.job.ClearRulesJob;
 import org.tronhook.job.LastBlockCache;
 import org.tronhook.job.LastestBlockProcessorJob;
 import org.tronhook.job.PreviousBlockProcessorJob;
@@ -39,9 +40,9 @@ public class TronHookNodeApp extends Jooby {
 				LastestBlockProcessorJob.class,
 				PreviousBlockProcessorJob.class,
 				LastBlockCache.class,
-				RulesFetcherJob.class
+				RulesFetcherJob.class,
+				ClearRulesJob.class
 				));
-		
 		
 		
 
