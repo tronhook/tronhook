@@ -37,9 +37,18 @@ public class RuleService {
 		
 	}
 	
+
+	public List<Rule> getInvalidRules(){
+		return this.getRules("{valid:false}");
+	}
+	
 	public List<Rule> getRules(){
+		return this.getRules("{}");
+	}
+	
+	public List<Rule> getRules(String query){
 		
-		MongoCursor<Rule> res = this.rulesCollection.find().as(Rule.class);
+		MongoCursor<Rule> res = this.rulesCollection.find(query).as(Rule.class);
 		
 		Iterator<Rule> it = res.iterator();
 		
@@ -52,7 +61,7 @@ public class RuleService {
 		return rules;
 	}
 	
-	public boolean getRemoveRuleById(String id) {
+	public boolean removeRuleById(String id) {
 		
 		WriteResult result = this.rulesCollection.remove("{id:#}",id);
 		
@@ -61,6 +70,10 @@ public class RuleService {
 		}
 		
 		return false;
+	}
+	
+	public void invalidateRule(String id,String error) {
+		this.rulesCollection.update("{id:#}",id).with("{$set:{valid:false,error: #}}",error);
 	}
 	
 }

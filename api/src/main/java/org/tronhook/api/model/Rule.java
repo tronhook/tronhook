@@ -1,33 +1,43 @@
 package org.tronhook.api.model;
 
 public class Rule {
-	
+
 	private String id;
-	
+
 	private String context;
-	
+
 	private String rule;
-	
+
 	private String repeat;
-	
+
 	private boolean valid;
-	
+
+	private String error;
+
 	public Rule() {
 		this.valid = true;
 	}
-	
+
+	public String getError() {
+		return error;
+	}
+
+	public void setError(String error) {
+		this.error = error;
+	}
+
 	public void setId(String id) {
 		this.id = id;
 	}
-	
+
 	public void setValid(boolean valid) {
 		this.valid = valid;
 	}
-	
+
 	public boolean isValid() {
 		return valid;
 	}
-	
+
 	public String getId() {
 		return id;
 	}
@@ -56,7 +66,4 @@ public class Rule {
 		this.repeat = repeat;
 	}
 
-	
-	
-	
 }

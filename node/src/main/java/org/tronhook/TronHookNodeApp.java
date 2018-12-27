@@ -85,10 +85,17 @@ public class TronHookNodeApp extends Jooby {
 		});
 		
 		get("/rules", (req, res) -> {
-
+			
+			boolean valid = req.param("valid").booleanValue(true);
+			
 			RuleService service = req.require(RuleService.class);
 
-			res.send(service.getRules());
+			if (valid) {
+				res.send(service.getRules());				
+			}else {
+				res.send(service.getInvalidRules());
+			}
+
 		});
 		
 		get("/rule/:id", (req, res) -> {
@@ -114,7 +121,7 @@ public class TronHookNodeApp extends Jooby {
 			
 			RuleService service = req.require(RuleService.class);
 			
-			boolean removed = service.getRemoveRuleById(id);
+			boolean removed = service.removeRuleById(id);
 			
 			if (removed) {
 				res.send("ok");	
