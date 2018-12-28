@@ -33,5 +33,15 @@ public class VoteWitnessContractModel {
 	public void setSupport(boolean support) {
 		this.support = support;
 	}
+	
+	public boolean hasVoteTo(String voteTo) {
+
+		for(Vote v:votes) {
+			if (v.getVoteAddress().equals(voteTo)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 }

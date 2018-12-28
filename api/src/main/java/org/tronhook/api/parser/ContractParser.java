@@ -1,14 +1,20 @@
 package org.tronhook.api.parser;
 
 
+import java.util.ArrayList;
+
 import org.tron.core.Wallet;
+import org.tron.core.services.http.JsonFormat;
 import org.tron.protos.Contract.TransferAssetContract;
 import org.tron.protos.Contract.TransferContract;
 import org.tron.protos.Contract.TriggerSmartContract;
+import org.tron.protos.Contract.VoteWitnessContract;
+import org.tron.protos.Contract.VoteWitnessContract.Vote;
 import org.tron.protos.Protocol.Transaction.Contract;
 import org.tronhook.api.model.contract.TransferAssetContractModel;
 import org.tronhook.api.model.contract.TransferContractModel;
 import org.tronhook.api.model.contract.TriggerSmartContractModel;
+import org.tronhook.api.model.contract.VoteWitnessContractModel;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -27,6 +33,8 @@ public class ContractParser {
 			return unpack(TransferAssetContract.parseFrom(contractByteString));
 		case TriggerSmartContract:
 			return unpack(TriggerSmartContract.parseFrom(contractByteString));
+		case VoteWitnessContract:
+			return unpack(VoteWitnessContract.parseFrom(contractByteString));
 		default:
 			break;
 		}
@@ -44,7 +52,7 @@ public class ContractParser {
 		model.setFrom(Wallet.encode58Check(parseFrom.getOwnerAddress().toByteArray()));
 		model.setTo(Wallet.encode58Check(parseFrom.getToAddress().toByteArray()));
 		model.setAsset(parseFrom.getAssetName().toStringUtf8());
-
+		JsonFormat.printToString(parseFrom);
 		
 		return model;
 	}
@@ -74,6 +82,33 @@ public class ContractParser {
 		return model;
 	}
 	
+	private static VoteWitnessContractModel unpack(VoteWitnessContract contract) {
+		
+		VoteWitnessContractModel model = new VoteWitnessContractModel();
+		
+		String ownerAddress = Wallet.encode58Check(contract.getOwnerAddress().toByteArray());
+		
+		model.setFrom(ownerAddress);
+		
+		ArrayList<org.tronhook.api.model.contract.Vote> votes = new ArrayList<>();
+		
+		for(Vote vote:contract.getVotesList()) {
+			
+			org.tronhook.api.model.contract.Vote v = new org.tronhook.api.model.contract.Vote();
+			
+			String voteAddress = Wallet.encode58Check(vote.getVoteAddress().toByteArray());
+
+			v.setVoteAddress(voteAddress);
+			v.setVoteCount(vote.getVoteCount());
+
+			votes.add(v);
+			
+		}
+
+		model.setVotes(votes);
+		
+		return model;
+	}
 	
 	
 	
