@@ -18,6 +18,7 @@ import org.springframework.expression.spel.SpelCompilerMode;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.SimpleEvaluationContext;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.tron.protos.Protocol.Block;
 import org.tronhook.Helper;
 import org.tronhook.TronHookNodeConfig;
@@ -29,6 +30,8 @@ import org.tronhook.api.TronHookException;
 import org.tronhook.api.model.BlockModel;
 import org.tronhook.api.model.Rule;
 import org.tronhook.api.model.TransactionModel;
+import org.tronhook.api.model.contract.Vote;
+import org.tronhook.api.model.contract.VoteWitnessContractModel;
 import org.tronhook.api.parser.BlockParser;
 import org.tronhook.api.parser.BlockParserException;
 import org.tronhook.job.LastBlockCache;
@@ -199,8 +202,7 @@ public class BlockProcessorService {
 					}
 					
 					Expression expr = (Expression) spelParser.parseExpression(rule.getRule());
-					EvaluationContext context = SimpleEvaluationContext.forReadOnlyDataBinding().withRootObject(tx)
-							.build();
+					EvaluationContext context = new StandardEvaluationContext(tx);
 					
 					try {
 						boolean ruleMatch = expr.getValue(context, Boolean.class);
@@ -267,5 +269,7 @@ public class BlockProcessorService {
 	public Logger getLogger() {
 		return LoggerFactory.getLogger(getClass());
 	}
+	
+
 
 }

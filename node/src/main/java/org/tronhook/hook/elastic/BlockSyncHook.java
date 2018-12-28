@@ -25,12 +25,12 @@ import com.typesafe.config.Config;
 
 import io.trxplorer.troncli.TronSolidityNodeCli;
 
-public class BlockSyncHook extends AbstractESHook{
+public class BlockSyncHook extends AbstractESHook {
 
 	public static final String TRON_HOOK_ID = "BlockSyncES";
 
 	private TronSolidityNodeCli tronSolidityCli;
-	
+
 	public BlockSyncHook(Config config) {
 		super(config);
 	}
@@ -43,8 +43,8 @@ public class BlockSyncHook extends AbstractESHook{
 
 			for (BlockModel block : blocks) {
 
-				getLogger().info("=>Block: {}",block.getHeight());
-				
+				getLogger().info("=>Block: {}", block.getHeight());
+
 				XContentBuilder builder = XContentFactory.jsonBuilder();
 				builder.startObject();
 				{
@@ -61,41 +61,35 @@ public class BlockSyncHook extends AbstractESHook{
 						.source(builder);
 
 				bulkRequest.add(indexRequest);
-				
-				
-				
-				
+
 			}
 
-			processBulkRequest(bulkRequest,"block");
-			
+			processBulkRequest(bulkRequest, "block");
+
 			processTransactions(getAllTransactions(blocks));
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 	}
 
-	
 	public void processTransactions(List<TransactionModel> transactions) {
-		
-		List<String> txIds = transactions.stream().map((tx)->tx.getHash()).collect(Collectors.toList());
-		
+
+		List<String> txIds = transactions.stream().map((tx) -> tx.getHash()).collect(Collectors.toList());
+
 		boolean fetchFee = getConfig().getBoolean("fetchFee");
-		
+
 		Map<String, TransactionInfo> txInfos = new HashMap<>();
-		
+
 		if (fetchFee && getNodeType().equals(NodeType.SOLIDITY)) {
-			txInfos = tronSolidityCli.getTxInfosByHash(txIds);	
+			txInfos = tronSolidityCli.getTxInfosByHash(txIds);
 		}
-		
-		
+
 		try {
 			BulkRequest bulkRequest = new BulkRequest();
 
 			for (TransactionModel tx : transactions) {
-
 
 				XContentBuilder builder = XContentFactory.jsonBuilder();
 				builder.startObject();
@@ -106,23 +100,23 @@ public class BlockSyncHook extends AbstractESHook{
 					builder.field("to", tx.getTo());
 					builder.field("block", tx.getBlock());
 					builder.timeField("timestamp", tx.getTimestamp());
-					
+
 					if (getNodeType().equals(NodeType.SOLIDITY)) {
 						builder.field("confirmed", true);
-						
+
 						if (fetchFee) {
 							TransactionInfo txInfo = this.tronSolidityCli.getTxInfoByHash(tx.getHash());
-							
+
 							HashMap<String, Long> fee = new HashMap<>();
 							fee.put("netUsage", txInfo.getReceipt().getNetUsage());
 							fee.put("netFee", txInfo.getReceipt().getNetFee());
 							fee.put("energyUsage", txInfo.getReceipt().getEnergyUsage());
 							fee.put("energyFee", txInfo.getReceipt().getEnergyFee());
-							builder.field("receipt",fee);
+							builder.field("receipt", fee);
 						}
 
 					}
-					
+
 					ObjectMapper om = new ObjectMapper();
 
 					builder.field("contract", om.convertValue(tx.getContract(), Map.class));
@@ -134,28 +128,23 @@ public class BlockSyncHook extends AbstractESHook{
 						String.valueOf(tx.getHash())).source(builder);
 
 				bulkRequest.add(indexRequest);
-				
-			
-				
+
 			}
 
 			processBulkRequest(bulkRequest, "tx");
-			
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 	}
-	
+
 	@Override
 	public void onNodeStart() {
 		super.onNodeStart();
-		
-		
+
 		this.tronSolidityCli = new TronSolidityNodeCli(this.getConfig().getString("soliditynode"), true);
-		
-	
-	}	
-	
+
+	}
+
 }
