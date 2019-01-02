@@ -5,7 +5,6 @@ import org.apache.commons.collections4.map.HashedMap;
 import org.jongo.Jongo;
 import org.jooby.Jooby;
 import org.jooby.Status;
-import org.jooby.handlers.CorsHandler;
 import org.jooby.json.Jackson;
 import org.jooby.mongodb.Jongoby;
 import org.jooby.mongodb.Mongodb;
@@ -36,7 +35,7 @@ public class TronHookNodeApp extends Jooby {
 		use(new Jongoby());
 		use(new TronHookNodeModule());
 		use(new Jackson());
-		use("*", new CorsHandler());
+		// use("*", new CorsHandler());
 		
 		use(new Quartz(BlockRefJob.class,
 				LastestBlockProcessorJob.class,
@@ -46,7 +45,20 @@ public class TronHookNodeApp extends Jooby {
 				ClearRulesJob.class
 				));
 		
-		
+		use("*", (req,res,chain)->{
+
+			//CORS
+			res.header("Access-Control-Allow-Origin", "*");
+			res.header("Access-Control-Allow-Headers", "origin, content-type, accept");
+			
+			if (req.method().equals("OPTIONS")) {
+				res.send(true);
+				return;
+			}
+			
+			chain.next(req, res);
+			
+		});
 
 		
 		onStart((registry)->{
