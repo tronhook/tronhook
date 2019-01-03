@@ -38,7 +38,7 @@ public class ContractParser {
 		case VoteWitnessContract:
 			return unpack(VoteWitnessContract.parseFrom(contractByteString));
 		case ExchangeTransactionContract:
-			return unpack(VoteWitnessContract.parseFrom(contractByteString));
+			return unpack(ExchangeTransactionContract.parseFrom(contractByteString));
 		default:
 			break;
 		}
@@ -122,7 +122,7 @@ public class ContractParser {
 		model.setExpected(contract.getExpected());
 		model.setQuant(contract.getQuant());
 		model.setTokenId(contract.getTokenId().toStringUtf8());
-		
+
 		return model;
 	}
 	
