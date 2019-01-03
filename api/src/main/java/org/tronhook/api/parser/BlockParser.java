@@ -34,7 +34,7 @@ public class BlockParser {
 		try {
 		   long blockNum = rawBlock.getBlockHeader().getRawData().getNumber();
 		   
-		   Timestamp timestamp = Timestamp.valueOf(Instant.ofEpochMilli(rawBlock.getBlockHeader().getRawData().getTimestamp()).atOffset(ZoneOffset.UTC).toLocalDateTime());
+		   long timestamp = rawBlock.getBlockHeader().getRawData().getTimestamp();
 		   int txCount = rawBlock.getTransactionsCount();
 		   String witnessAddress = Wallet.encode58Check(rawBlock.getBlockHeader().getRawData().getWitnessAddress().toByteArray());
 		   String parentHash = Sha256Hash.wrap(rawBlock.getBlockHeader().getRawData().getParentHash()).toString();
@@ -50,7 +50,7 @@ public class BlockParser {
 		   block.setWitness(witnessAddress);
 		   block.setTxCount(txCount);
 		   block.setSize(blockSize);
-		   block.setTimestamp(timestamp.getTime());
+		   block.setTimestamp(timestamp);
 		   block.setConfirmed(confirmed);
 		   
 			for (Transaction rawTransaction : rawBlock.getTransactionsList()) {
@@ -72,7 +72,7 @@ public class BlockParser {
 						transaction.setData(rawTransaction.getRawData().getData().toStringUtf8());
 					}
 					
-					transaction.setTimestamp(timestamp.getTime());
+					transaction.setTimestamp(timestamp);
 					transaction.setFrom(fromAddress);
 					transaction.setTo(toAddress);
 					transaction.setHash(txHash);
