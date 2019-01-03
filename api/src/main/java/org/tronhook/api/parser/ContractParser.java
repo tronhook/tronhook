@@ -5,12 +5,14 @@ import java.util.ArrayList;
 
 import org.tron.core.Wallet;
 import org.tron.core.services.http.JsonFormat;
+import org.tron.protos.Contract.ExchangeTransactionContract;
 import org.tron.protos.Contract.TransferAssetContract;
 import org.tron.protos.Contract.TransferContract;
 import org.tron.protos.Contract.TriggerSmartContract;
 import org.tron.protos.Contract.VoteWitnessContract;
 import org.tron.protos.Contract.VoteWitnessContract.Vote;
 import org.tron.protos.Protocol.Transaction.Contract;
+import org.tronhook.api.model.contract.ExchangeTransactionContractModel;
 import org.tronhook.api.model.contract.TransferAssetContractModel;
 import org.tronhook.api.model.contract.TransferContractModel;
 import org.tronhook.api.model.contract.TriggerSmartContractModel;
@@ -35,6 +37,8 @@ public class ContractParser {
 			return unpack(TriggerSmartContract.parseFrom(contractByteString));
 		case VoteWitnessContract:
 			return unpack(VoteWitnessContract.parseFrom(contractByteString));
+		case ExchangeTransactionContract:
+			return unpack(VoteWitnessContract.parseFrom(contractByteString));
 		default:
 			break;
 		}
@@ -44,26 +48,26 @@ public class ContractParser {
 		return null;
 	}
 
-	private static TransferAssetContractModel unpack(TransferAssetContract parseFrom) {
+	private static TransferAssetContractModel unpack(TransferAssetContract contract) {
 
 		TransferAssetContractModel model = new TransferAssetContractModel();
 		
-		model.setAmount(parseFrom.getAmount());
-		model.setFrom(Wallet.encode58Check(parseFrom.getOwnerAddress().toByteArray()));
-		model.setTo(Wallet.encode58Check(parseFrom.getToAddress().toByteArray()));
-		model.setAsset(parseFrom.getAssetName().toStringUtf8());
-		JsonFormat.printToString(parseFrom);
+		model.setAmount(contract.getAmount());
+		model.setFrom(Wallet.encode58Check(contract.getOwnerAddress().toByteArray()));
+		model.setTo(Wallet.encode58Check(contract.getToAddress().toByteArray()));
+		model.setAsset(contract.getAssetName().toStringUtf8());
+		JsonFormat.printToString(contract);
 		
 		return model;
 	}
 
-	private static TransferContractModel unpack(TransferContract parseFrom) {
+	private static TransferContractModel unpack(TransferContract contract) {
 		
 		TransferContractModel model = new TransferContractModel();
 		
-		model.setAmount(parseFrom.getAmount());
-		model.setFrom(Wallet.encode58Check(parseFrom.getOwnerAddress().toByteArray()));
-		model.setTo(Wallet.encode58Check(parseFrom.getToAddress().toByteArray()));
+		model.setAmount(contract.getAmount());
+		model.setFrom(Wallet.encode58Check(contract.getOwnerAddress().toByteArray()));
+		model.setTo(Wallet.encode58Check(contract.getToAddress().toByteArray()));
 		
 		
 		return model;
@@ -109,6 +113,20 @@ public class ContractParser {
 		
 		return model;
 	}
+	
+	private static ExchangeTransactionContractModel unpack(ExchangeTransactionContract contract) {
+		
+		ExchangeTransactionContractModel model = new ExchangeTransactionContractModel();
+		
+		model.setExchangeId(contract.getExchangeId());
+		model.setExpected(contract.getExpected());
+		model.setQuant(contract.getQuant());
+		model.setTokenId(contract.getTokenId().toStringUtf8());
+		
+		return model;
+	}
+	
+	
 	
 	
 	
