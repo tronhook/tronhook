@@ -386,10 +386,8 @@ public class ContractParser {
 		TransferAssetContractModel model = new TransferAssetContractModel();
 		
 		model.setAmount(contract.getAmount());
-		model.setFrom(Wallet.encode58Check(contract.getOwnerAddress().toByteArray()));
-		model.setTo(Wallet.encode58Check(contract.getToAddress().toByteArray()));
 		model.setAsset(contract.getAssetName().toStringUtf8());
-		JsonFormat.printToString(contract);
+
 		
 		return model;
 	}
@@ -399,8 +397,6 @@ public class ContractParser {
 		TransferContractModel model = new TransferContractModel();
 		
 		model.setAmount(contract.getAmount());
-		model.setFrom(Wallet.encode58Check(contract.getOwnerAddress().toByteArray()));
-		model.setTo(Wallet.encode58Check(contract.getToAddress().toByteArray()));
 		
 		
 		return model;
@@ -411,7 +407,6 @@ public class ContractParser {
 		TriggerSmartContractModel model = new TriggerSmartContractModel();
 		
 		model.setContractAddress(Wallet.encode58Check(contract.getContractAddress().toByteArray()));
-		model.setFrom(Wallet.encode58Check(contract.getOwnerAddress().toByteArray()));
 		model.setCallTokenValue(contract.getCallValue());
 		//model.setData(contract.getData().toStringUtf8());
 
