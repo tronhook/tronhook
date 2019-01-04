@@ -1,17 +1,12 @@
 package org.tronhook.hook.elastic;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
-import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.tron.protos.Protocol.TransactionInfo;
@@ -48,8 +43,12 @@ public class BlockSyncHook extends AbstractESHook {
 				XContentBuilder builder = XContentFactory.jsonBuilder();
 				builder.startObject();
 				{
-					builder.field("hash", block.getHash());
 					builder.field("height", block.getHeight());
+					builder.field("txCount",block.getTxCount());
+					builder.field("parentHash",block.getParentHash());
+					builder.field("size",block.getSize());
+					builder.field("witness",block.getWitness());
+					
 					builder.timeField("timestamp", block.getTimestamp());
 					if (getNodeType().equals(NodeType.SOLIDITY)) {
 						builder.field("confirmed", true);
@@ -79,7 +78,8 @@ public class BlockSyncHook extends AbstractESHook {
 		List<String> txIds = transactions.stream().map((tx) -> tx.getHash()).collect(Collectors.toList());
 
 		boolean fetchFee = getConfig().getBoolean("fetchFee");
-
+		boolean storeContract= getConfig().getBoolean("contract");
+				
 		Map<String, TransactionInfo> txInfos = new HashMap<>();
 
 		if (fetchFee && getNodeType().equals(NodeType.SOLIDITY)) {
@@ -117,9 +117,11 @@ public class BlockSyncHook extends AbstractESHook {
 
 					}
 
-					ObjectMapper om = new ObjectMapper();
+					if (storeContract) {
+						ObjectMapper om = new ObjectMapper();
+						builder.field("contract", om.convertValue(tx.getContract(), Map.class));						
+					}
 
-					builder.field("contract", om.convertValue(tx.getContract(), Map.class));
 
 				}
 				builder.endObject();
