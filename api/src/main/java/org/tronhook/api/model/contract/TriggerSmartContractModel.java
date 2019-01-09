@@ -12,7 +12,7 @@ public class TriggerSmartContractModel {
 	
 	private long callTokenValue;
 	
-	private long tokenId;
+	private String tokenId;
 
 	public String getFrom() {
 		return from;
@@ -54,11 +54,11 @@ public class TriggerSmartContractModel {
 		this.callTokenValue = callTokenValue;
 	}
 
-	public long getTokenId() {
+	public String getTokenId() {
 		return tokenId;
 	}
 
-	public void setTokenId(long tokenId) {
+	public void setTokenId(String tokenId) {
 		this.tokenId = tokenId;
 	}
 
