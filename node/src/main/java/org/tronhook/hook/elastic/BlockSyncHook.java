@@ -1,6 +1,7 @@
 package org.tronhook.hook.elastic;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -64,13 +65,78 @@ public class BlockSyncHook extends AbstractESHook {
 			}
 
 			processBulkRequest(bulkRequest, "block");
+			
+			List<TransactionModel> transactions = getAllTransactions(blocks);
+			
+			processTransactions(transactions);
+			
+			boolean trackAccounts = getConfig().getBoolean("trackAccounts");
+			
+			if (trackAccounts) {
+				processAccounts(transactions);				
+			}
 
-			processTransactions(getAllTransactions(blocks));
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	private void processAccounts(List<TransactionModel> transactions) {
+		
+		HashMap<String,Long> addressesByBlock = new HashMap<>();
+		
+		for(TransactionModel tx:transactions) {
+				
+			if (tx.getFrom()!=null && addressesByBlock.get(tx.getFrom())==null) {
+				addressesByBlock.put(tx.getFrom(), tx.getBlock());
+			}else if (tx.getFrom()!=null && addressesByBlock.get(tx.getFrom())!=null) {
+				long previousBlock  = addressesByBlock.get(tx.getFrom());
+				if (tx.getBlock()>previousBlock) {
+					addressesByBlock.put(tx.getFrom(), tx.getBlock());	
+				}
+			}
+			
+			if (tx.getTo()!=null && addressesByBlock.get(tx.getTo())==null) {
+				addressesByBlock.put(tx.getTo(), tx.getBlock());
+			}else if (tx.getTo()!=null && addressesByBlock.get(tx.getTo())!=null) {
+				long previousBlock  = addressesByBlock.get(tx.getTo());
+				if (tx.getBlock()>previousBlock) {
+					addressesByBlock.put(tx.getTo(), tx.getBlock());	
+				}
+			}
+			
+
+		}
+		
+		
+		try {
+			BulkRequest bulkRequest = new BulkRequest();
+
+			for (String address : addressesByBlock.keySet()) {
+
+				XContentBuilder builder = XContentFactory.jsonBuilder();
+				builder.startObject();
+				{
+					builder.field("block", addressesByBlock.get(address));
+				}
+				builder.endObject();
+
+				IndexRequest indexRequest = new IndexRequest("accounts", "accounts",
+						address).source(builder);
+
+				bulkRequest.add(indexRequest);
+
+			}
+
+			processBulkRequest(bulkRequest, "account");
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
+		
 	}
 
 	public void processTransactions(List<TransactionModel> transactions) {
